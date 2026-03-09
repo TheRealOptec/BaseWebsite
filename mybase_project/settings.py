@@ -124,6 +124,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR, ]
 
+STATIC_CSS_URL = f"{STATIC_URL}css/"
+
 # Media files
 
 MEDIA_ROOT = MEDIA_DIR
