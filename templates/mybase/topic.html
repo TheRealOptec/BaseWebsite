@@ -1,0 +1,270 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}
+    {% if topic %}{{ topic.name }}{% else %}Topic{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+
+        <!-- Topic info -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Topic Info</h2>
+
+                {% if topic %}
+                    <h3 class="h5 mb-2">{{ topic.name }}</h3>
+
+                    {% if topic.description %}
+                        <p class="text-muted small mb-3">{{ topic.description }}</p>
+                    {% else %}
+                        <p class="text-muted small mb-3">No description available.</p>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if topic.total_likes %}
+                            <span class="badge bg-primary">{{ topic.total_likes }} likes</span>
+                        {% endif %}
+                        {% if topic.total_views %}
+                            <span class="badge bg-dark">{{ topic.total_views }} views</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Topic data not available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top liked topics -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Top Topics by Likes</h2>
+
+                {% if top_liked_topics %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in top_liked_topics %}
+                            <li class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="/topic/{{ t.slug }}/" class="text-decoration-none">
+                                        {{ t.name }}
+                                    </a>
+                                    <span class="badge bg-primary">
+                                        {{ t.total_likes|default:0 }}
+                                    </span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small mb-0">No data available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top viewed topics -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Top Topics by Views</h2>
+
+                {% if top_viewed_topics %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in top_viewed_topics %}
+                            <li class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="/topic/{{ t.slug }}/" class="text-decoration-none">
+                                        {{ t.name }}
+                                    </a>
+                                    <span class="badge bg-dark">
+                                        {{ t.total_views|default:0 }}
+                                    </span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small mb-0">No data available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Most commented topics -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Most Commented Topics</h2>
+
+                {% if most_commented_topics %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in most_commented_topics %}
+                            <li class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="/topic/{{ t.slug }}/" class="text-decoration-none">
+                                        {{ t.name }}
+                                    </a>
+                                    <span class="badge bg-secondary">
+                                        {{ t.comment_count|default:0 }}
+                                    </span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small mb-0">No data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main topic content -->
+    <div class="col-lg-9">
+
+        <!-- Topic header -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                {% if topic %}
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <h1 class="h3 mb-2">{{ topic.name }}</h1>
+                            {% if topic.description %}
+                                <p class="text-muted mb-0">{{ topic.description }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if user.is_authenticated %}
+                            <div class="text-md-end">
+                                <a href="/topic/{{ topic.slug }}/make-post/" class="btn btn-primary">
+                                    <i class="bi bi-plus-lg"></i> Make New Post
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="text-md-end">
+                                <a href="/login/" class="btn btn-outline-primary btn-sm">Log in to post</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <h1 class="h3 mb-0">Topic</h1>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Posts list -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0">Posts</h2>
+                    {% if posts %}
+                        <span class="text-muted small">{{ posts|length }} post{{ posts|length|pluralize }}</span>
+                    {% endif %}
+                </div>
+
+                {% if posts %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for post in posts %}
+                            <div class="border rounded p-3">
+
+                                <!-- Post title + meta -->
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-3">
+                                    <div>
+                                        <h3 class="h5 mb-1">
+                                            <a href="/post/{{ post.slug }}/" class="text-decoration-none">
+                                                {{ post.title }}
+                                            </a>
+                                        </h3>
+
+                                        <p class="text-muted small mb-0">
+                                            {% if post.author %}
+                                                by {{ post.author.username|default:post.author }}
+                                            {% else %}
+                                                by Unknown user
+                                            {% endif %}
+                                            {% if post.created_at %}
+                                                · {{ post.created_at }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                    {% if post.views %}
+                                        <span class="badge bg-dark align-self-start">
+                                            {{ post.views }} views
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row g-3 align-items-start">
+                                    <!-- Optional image -->
+                                    <div class="col-md-3">
+                                        {% if post.image %}
+                                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded">
+                                        {% else %}
+                                            <div class="border rounded text-center text-muted p-4 h-100 d-flex align-items-center justify-content-center">
+                                                Image (optional)
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Post preview -->
+                                    <div class="col-md-9">
+                                        {% if post.body %}
+                                            <p class="mb-3 text-muted">
+                                                {{ post.body|truncatewords:30 }}
+                                            </p>
+                                        {% else %}
+                                            <p class="mb-3 text-muted">No preview available.</p>
+                                        {% endif %}
+
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                            <span class="badge bg-secondary">
+                                                Comments: {{ post.comment_count|default:0 }}
+                                            </span>
+
+                                            <span class="badge bg-primary">
+                                                Likes: {{ post.likes|default:post.total_likes|default:0 }}
+                                            </span>
+                                        </div>
+
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <a href="/post/{{ post.slug }}/" class="btn btn-outline-primary btn-sm">
+                                                View Post
+                                            </a>
+
+                                            {% if user.is_authenticated and post.author == user %}
+                                                <a href="#" class="btn btn-outline-secondary btn-sm">
+                                                    Edit
+                                                </a>
+                                            {% endif %}
+
+                                            {% if user.is_authenticated %}
+                                                <a href="#" class="btn btn-outline-danger btn-sm">
+                                                    Report
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-3">No posts in this topic yet.</p>
+
+                        {% if user.is_authenticated and topic %}
+                            <a href="/topic/{{ topic.slug }}/make-post/" class="btn btn-primary">
+                                Be the first to post
+                            </a>
+                        {% else %}
+                            <a href="/login/" class="btn btn-outline-primary">
+                                Log in to create the first post
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

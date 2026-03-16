@@ -1,0 +1,276 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}
+    {% if post %}{{ post.title }}{% else %}Post Detail{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+
+        <!-- Topic / post info -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Post Info</h2>
+
+                {% if post %}
+                    <h3 class="h5 mb-2">{{ post.title }}</h3>
+
+                    <p class="text-muted small mb-2">
+                        {% if post.author %}
+                            by {{ post.author.username|default:post.author }}
+                        {% else %}
+                            by Unknown user
+                        {% endif %}
+                    </p>
+
+                    {% if post.topic %}
+                        <p class="small mb-3">
+                            Topic:
+                            <a href="/topic/{{ post.topic.slug }}/" class="text-decoration-none">
+                                {{ post.topic.name }}
+                            </a>
+                        </p>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary">
+                            Likes: {{ post.likes|default:post.total_likes|default:0 }}
+                        </span>
+                        <span class="badge bg-secondary">
+                            Comments: {{ comments|length|default:0 }}
+                        </span>
+                        <span class="badge bg-dark">
+                            Views: {{ post.views|default:0 }}
+                        </span>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Post data not available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Navigation</h2>
+
+                <div class="d-grid gap-2">
+                    <a href="/home/" class="btn btn-outline-primary btn-sm">Home</a>
+
+                    {% if post.topic %}
+                        <a href="/topic/{{ post.topic.slug }}/" class="btn btn-outline-secondary btn-sm">
+                            Back to Topic
+                        </a>
+                    {% endif %}
+
+                    {% if user.is_authenticated and post.topic %}
+                        <a href="/topic/{{ post.topic.slug }}/make-post/" class="btn btn-primary btn-sm">
+                            Make New Post
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional stats / top topics -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Top Topics</h2>
+
+                {% if top_topics %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in top_topics %}
+                            <li class="list-group-item px-0">
+                                <a href="/topic/{{ t.slug }}/" class="text-decoration-none">
+                                    {{ t.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small mb-0">No data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main post content -->
+    <div class="col-lg-9">
+
+        <!-- Post content -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                {% if post %}
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-3">
+                        <div>
+                            <h1 class="h3 mb-2">{{ post.title }}</h1>
+
+                            <p class="text-muted mb-0">
+                                {% if post.author %}
+                                    by {{ post.author.username|default:post.author }}
+                                {% else %}
+                                    by Unknown user
+                                {% endif %}
+                                {% if post.created_at %}
+                                    · {{ post.created_at }}
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-primary">
+                                Likes: {{ post.likes|default:post.total_likes|default:0 }}
+                            </span>
+                            <span class="badge bg-secondary">
+                                Comments: {{ comments|length|default:0 }}
+                            </span>
+                            <span class="badge bg-dark">
+                                Views: {{ post.views|default:0 }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Optional image -->
+                    <div class="mb-4">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
+                        {% else %}
+                            <div class="border rounded text-center text-muted p-5">
+                                Image (optional)
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Post body -->
+                    <div class="mb-4">
+                        {% if post.body %}
+                            <p class="mb-0">{{ post.body|linebreaks }}</p>
+                        {% else %}
+                            <p class="text-muted mb-0">No content available.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Post actions -->
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-hand-thumbs-up"></i> Like
+                            </button>
+                        {% endif %}
+
+                        {% if user.is_authenticated and post.author == user %}
+                            <a href="#" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="#" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            <a href="#" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-flag"></i> Report
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <h1 class="h3">Post Detail</h1>
+                    <p class="text-muted mb-0">Post not found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Comments section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0">Comments</h2>
+                    <span class="text-muted small">
+                        {{ comments|length|default:0 }} comment{{ comments|length|pluralize }}
+                    </span>
+                </div>
+
+                {% if comments %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for comment in comments %}
+                            <div class="border rounded p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>
+                                            {% if comment.author %}
+                                                {{ comment.author.username|default:comment.author }}
+                                            {% else %}
+                                                Unknown user
+                                            {% endif %}
+                                        </strong>
+
+                                        {% if comment.created_at %}
+                                            <p class="text-muted small mb-0">{{ comment.created_at }}</p>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if user.is_authenticated and comment.author == user %}
+                                        <div class="d-flex gap-2">
+                                            <a href="#" class="btn btn-outline-secondary btn-sm">Edit</a>
+                                            <a href="#" class="btn btn-outline-danger btn-sm">Delete</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    {% if comment.body %}
+                                        <p class="mb-0">{{ comment.body|linebreaks }}</p>
+                                    {% else %}
+                                        <p class="text-muted mb-0">No comment text.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No comments yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add comment -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Add Comment</h2>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+
+                        {% if comment_form %}
+                            {{ comment_form.as_p }}
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="commentBody" class="form-label">Your Comment</label>
+                                <textarea
+                                    id="commentBody"
+                                    name="body"
+                                    rows="4"
+                                    class="form-control"
+                                    placeholder="Write your comment here..."
+                                ></textarea>
+                            </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-chat-dots"></i> Add Comment
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-muted mb-3">You need to log in to add a comment.</p>
+                    <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
