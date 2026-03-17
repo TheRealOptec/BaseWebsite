@@ -1,0 +1,90 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-2">Log In</h1>
+                    <p class="text-muted mb-0">Access your account to join the discussion.</p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="alert alert-info text-center">
+                        You are already logged in.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="/home/" class="btn btn-primary">Go to Home</a>
+                        <a href="/edit-profile/" class="btn btn-outline-secondary">Edit Profile</a>
+                    </div>
+                {% else %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+
+                        {% if form %}
+                            {{ form.non_field_errors }}
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="loginUsername" class="form-label">Username</label>
+                                <input
+                                    type="text"
+                                    id="loginUsername"
+                                    name="username"
+                                    class="form-control"
+                                    placeholder="Enter your username"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Enter your password"
+                                    required
+                                >
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right"></i> Log In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Don’t have an account yet?</p>
+                        <a href="/sign-up/" class="btn btn-outline-success btn-sm">Create an Account</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

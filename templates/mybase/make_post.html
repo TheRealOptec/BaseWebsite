@@ -1,0 +1,172 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}
+    {% if topic %}Make Post - {{ topic.name }}{% else %}Make Post{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+
+        <!-- Topic info -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Posting In</h2>
+
+                {% if topic %}
+                    <h3 class="h5 mb-2">{{ topic.name }}</h3>
+
+                    {% if topic.description %}
+                        <p class="text-muted small mb-3">{{ topic.description }}</p>
+                    {% else %}
+                        <p class="text-muted small mb-3">No description available.</p>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <a href="/topic/{{ topic.slug }}/" class="btn btn-outline-secondary btn-sm">
+                            Back to Topic
+                        </a>
+                        <a href="/home/" class="btn btn-outline-primary btn-sm">
+                            Home
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Topic data not available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Posting tips -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Posting Tips</h2>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li>Use a clear and relevant title.</li>
+                    <li>Keep your post respectful and on topic.</li>
+                    <li>Add an image only if it supports your post.</li>
+                    <li>Avoid duplicate posts.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main form -->
+    <div class="col-lg-9">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="mb-4">
+                    <h1 class="h3 mb-2">Make New Post</h1>
+                    {% if topic %}
+                        <p class="text-muted mb-0">
+                            Create a new post in
+                            <strong>{{ topic.name }}</strong>.
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0">Create a new discussion post.</p>
+                    {% endif %}
+                </div>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {% if post_form %}
+                            {{ post_form.non_field_errors }}
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ post_form.title.id_for_label }}">Title</label>
+                                {{ post_form.title }}
+                                {% if post_form.title.errors %}
+                                    <div class="text-danger small mt-1">{{ post_form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ post_form.body.id_for_label }}">Post Content</label>
+                                {{ post_form.body }}
+                                {% if post_form.body.errors %}
+                                    <div class="text-danger small mt-1">{{ post_form.body.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if post_form.image %}
+                                <div class="mb-4">
+                                    <label class="form-label" for="{{ post_form.image.id_for_label }}">Image (optional)</label>
+                                    {{ post_form.image }}
+                                    {% if post_form.image.errors %}
+                                        <div class="text-danger small mt-1">{{ post_form.image.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="postTitle" class="form-label">Title</label>
+                                <input
+                                    type="text"
+                                    id="postTitle"
+                                    name="title"
+                                    class="form-control"
+                                    placeholder="Enter your post title"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="postBody" class="form-label">Post Content</label>
+                                <textarea
+                                    id="postBody"
+                                    name="body"
+                                    rows="8"
+                                    class="form-control"
+                                    placeholder="Write your post here..."
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="postImage" class="form-label">Image (optional)</label>
+                                <input
+                                    type="file"
+                                    id="postImage"
+                                    name="image"
+                                    class="form-control"
+                                    accept="image/*"
+                                >
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Submit Post
+                            </button>
+
+                            {% if topic %}
+                                <a href="/topic/{{ topic.slug }}/" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            {% else %}
+                                <a href="/home/" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning mb-3">
+                        You need to log in before creating a post.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="/login/" class="btn btn-outline-primary">Log In</a>
+                        <a href="/sign-up/" class="btn btn-success">Sign Up</a>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
