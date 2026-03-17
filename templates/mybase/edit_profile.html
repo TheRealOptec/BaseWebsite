@@ -1,0 +1,162 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <div class="mb-4">
+                    <h1 class="h3 mb-2">Edit Profile</h1>
+                    <p class="text-muted mb-0">
+                        Update your profile information and account details.
+                    </p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {% if user_form %}
+                            {{ user_form.non_field_errors }}
+                        {% endif %}
+
+                        {% if profile_form %}
+                            {{ profile_form.non_field_errors }}
+                        {% endif %}
+
+                        <div class="row g-4">
+
+                            <!-- Account details -->
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <h2 class="h5 mb-3">Account Details</h2>
+
+                                        {% if user_form %}
+                                            <div class="mb-3">
+                                                <label class="form-label" for="{{ user_form.username.id_for_label }}">Username</label>
+                                                {{ user_form.username }}
+                                                {% if user_form.username.errors %}
+                                                    <div class="text-danger small mt-1">{{ user_form.username.errors }}</div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label" for="{{ user_form.email.id_for_label }}">Email</label>
+                                                {{ user_form.email }}
+                                                {% if user_form.email.errors %}
+                                                    <div class="text-danger small mt-1">{{ user_form.email.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <div class="mb-3">
+                                                <label for="editUsername" class="form-label">Username</label>
+                                                <input
+                                                    type="text"
+                                                    id="editUsername"
+                                                    name="username"
+                                                    class="form-control"
+                                                    value="{{ user.username }}"
+                                                >
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="editEmail" class="form-label">Email</label>
+                                                <input
+                                                    type="email"
+                                                    id="editEmail"
+                                                    name="email"
+                                                    class="form-control"
+                                                    value="{{ user.email }}"
+                                                >
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Profile details -->
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <h2 class="h5 mb-3">Profile Details</h2>
+
+                                        {% if profile_form %}
+                                            {% if profile_form.profile_picture %}
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="{{ profile_form.profile_picture.id_for_label }}">Profile Picture</label>
+                                                    {{ profile_form.profile_picture }}
+                                                    {% if profile_form.profile_picture.errors %}
+                                                        <div class="text-danger small mt-1">{{ profile_form.profile_picture.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+
+                                            {% if profile_form.bio %}
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                                                    {{ profile_form.bio }}
+                                                    {% if profile_form.bio.errors %}
+                                                        <div class="text-danger small mt-1">{{ profile_form.bio.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="mb-3">
+                                                <label for="editProfilePicture" class="form-label">Profile Picture</label>
+                                                <input
+                                                    type="file"
+                                                    id="editProfilePicture"
+                                                    name="profile_picture"
+                                                    class="form-control"
+                                                    accept="image/*"
+                                                >
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="editBio" class="form-label">Bio</label>
+                                                <textarea
+                                                    id="editBio"
+                                                    name="bio"
+                                                    rows="5"
+                                                    class="form-control"
+                                                    placeholder="Write something about yourself..."
+                                                ></textarea>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                            <a href="/view-profile/{{ user.username }}/" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning mb-3">
+                        You need to log in before editing your profile.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="/login/" class="btn btn-outline-primary">Log In</a>
+                        <a href="/sign-up/" class="btn btn-success">Sign Up</a>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

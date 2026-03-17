@@ -1,0 +1,130 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-2">Sign Up</h1>
+                    <p class="text-muted mb-0">Create an account to post, comment, and manage your profile.</p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="alert alert-info text-center">
+                        You are already signed in.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="/home/" class="btn btn-primary">Go to Home</a>
+                        <a href="/edit-profile/" class="btn btn-outline-secondary">Edit Profile</a>
+                    </div>
+                {% else %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+
+                        {% if form %}
+                            {{ form.non_field_errors }}
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="signUpUsername" class="form-label">Username</label>
+                                <input
+                                    type="text"
+                                    id="signUpUsername"
+                                    name="username"
+                                    class="form-control"
+                                    placeholder="Choose a username"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="signUpEmail" class="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    id="signUpEmail"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="signUpPassword1" class="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    id="signUpPassword1"
+                                    name="password1"
+                                    class="form-control"
+                                    placeholder="Create a password"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="signUpPassword2" class="form-label">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    id="signUpPassword2"
+                                    name="password2"
+                                    class="form-control"
+                                    placeholder="Repeat your password"
+                                    required
+                                >
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-person-plus"></i> Sign Up
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Already have an account?</p>
+                        <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

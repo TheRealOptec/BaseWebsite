@@ -1,0 +1,174 @@
+{% extends 'mybase/base.html' %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+
+        <!-- Search summary -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Search Summary</h2>
+
+                {% if query %}
+                    <p class="mb-2">
+                        <strong>Query:</strong>
+                    </p>
+                    <p class="text-muted small mb-3">“{{ query }}”</p>
+                {% else %}
+                    <p class="text-muted small mb-3">No search query entered.</p>
+                {% endif %}
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Topics</span>
+                    <span class="badge bg-primary">{{ topic_results|length|default:0 }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span>Posts</span>
+                    <span class="badge bg-secondary">{{ post_results|length|default:0 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Quick Links</h2>
+                <div class="d-grid gap-2">
+                    <a href="/home/" class="btn btn-outline-primary btn-sm">Home</a>
+                    {% if user.is_authenticated %}
+                        <a href="/edit-profile/" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                    {% else %}
+                        <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
+                        <a href="/sign-up/" class="btn btn-success btn-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main content -->
+    <div class="col-lg-9">
+
+        <!-- Search header -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="h3 mb-2">Search Results</h1>
+
+                {% if query %}
+                    <p class="text-muted mb-0">
+                        Showing results for <strong>“{{ query }}”</strong>.
+                    </p>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        Use the search bar above to search for topics or posts.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Topic results -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0">Matching Topics</h2>
+                    <span class="text-muted small">{{ topic_results|length|default:0 }} result{{ topic_results|length|pluralize }}</span>
+                </div>
+
+                {% if topic_results %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for topic in topic_results %}
+                            <div class="border rounded p-3">
+                                <h3 class="h6 mb-1">
+                                    <a href="/topic/{{ topic.slug }}/" class="text-decoration-none">
+                                        {{ topic.name }}
+                                    </a>
+                                </h3>
+
+                                {% if topic.description %}
+                                    <p class="text-muted mb-2">{{ topic.description|truncatewords:20 }}</p>
+                                {% else %}
+                                    <p class="text-muted mb-2">No description available.</p>
+                                {% endif %}
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-primary">Likes: {{ topic.total_likes|default:0 }}</span>
+                                    <span class="badge bg-dark">Views: {{ topic.total_views|default:0 }}</span>
+                                    <span class="badge bg-secondary">Comments: {{ topic.comment_count|default:0 }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No matching topics found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Post results -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0">Matching Posts</h2>
+                    <span class="text-muted small">{{ post_results|length|default:0 }} result{{ post_results|length|pluralize }}</span>
+                </div>
+
+                {% if post_results %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for post in post_results %}
+                            <div class="border rounded p-3">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-2">
+                                    <div>
+                                        <h3 class="h6 mb-1">
+                                            <a href="/post/{{ post.slug }}/" class="text-decoration-none">
+                                                {{ post.title }}
+                                            </a>
+                                        </h3>
+
+                                        <p class="text-muted small mb-0">
+                                            {% if post.author %}
+                                                by {{ post.author.username|default:post.author }}
+                                            {% else %}
+                                                by Unknown user
+                                            {% endif %}
+                                            {% if post.created_at %}
+                                                · {{ post.created_at }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                    {% if post.topic %}
+                                        <span class="badge bg-light text-dark border">
+                                            {{ post.topic.name }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                {% if post.body %}
+                                    <p class="text-muted mb-3">{{ post.body|truncatewords:30 }}</p>
+                                {% else %}
+                                    <p class="text-muted mb-3">No preview available.</p>
+                                {% endif %}
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-primary">Likes: {{ post.likes|default:0 }}</span>
+                                    <span class="badge bg-secondary">Comments: {{ post.comment_count|default:0 }}</span>
+                                    <span class="badge bg-dark">Views: {{ post.views|default:0 }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No matching posts found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
