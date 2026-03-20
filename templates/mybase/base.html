@@ -21,62 +21,12 @@
     <!-- Your CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
-<body>
+<body class="site-body">
 
-    <header class="border-bottom bg-light py-3">
-        <div class="container">
-            <div class="row align-items-center">
-                
-                <!-- Logo -->
-                <div class="col-md-3 text-center text-md-start mb-2 mb-md-0">
-                    <a href="/home/" class="text-decoration-none text-dark">
-                        <h2 class="mb-0">
-                            <i class="bi bi-moon-stars-fill me-2"></i> Forum
-                        </h2>
-                    </a>
-                </div>
+    {% include 'mybase/partials/_navbar.html' %}
 
-                <!-- Search Bar -->
-                <div class="col-md-6 mb-2 mb-md-0">
-                    <form class="input-group" action="/search/" method="get">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                        <input
-                            class="form-control"
-                            type="search"
-                            name="q"
-                            placeholder="Search..."
-                        >
-                        <button class="btn btn-secondary" type="button">
-                            <i class="bi bi-filter"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Auth Buttons -->
-                <div class="col-md-3 text-center text-md-end">
-                    {% if user.is_authenticated %}
-                        <a href="/edit-profile/" class="btn btn-outline-primary btn-sm me-2">Edit Profile</a>
-                        <a href="/logout/" class="btn btn-outline-danger btn-sm">Log Out</a>
-                    {% else %}
-                        <a href="/login/" class="btn btn-outline-primary btn-sm me-2">Log In</a>
-                        <a href="/sign-up/" class="btn btn-success btn-sm">Sign Up</a>
-                    {% endif %}
-                </div>
-
-            </div>
-        </div>
-    </header>
-
-    <main class="container py-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-info">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <main class="site-main container py-4">
+        {% include 'mybase/partials/_messages.html' %}
 
         {% block content %}
         {% endblock %}

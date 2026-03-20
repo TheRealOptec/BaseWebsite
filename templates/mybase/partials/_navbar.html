@@ -1,0 +1,54 @@
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:search' as search_url %}
+{% url 'mybase:login' as login_url %}
+{% url 'mybase:sign_up' as sign_up_url %}
+{% url 'mybase:edit_profile' as edit_profile_url %}
+{% url 'mybase:logout' as logout_url %}
+
+<header class="site-header border-bottom py-3">
+    <div class="container">
+        <div class="row align-items-center g-3">
+
+            <div class="col-lg-4 col-md-5 text-center text-md-start">
+                <a href="{{ home_url|default:'/home/' }}" class="site-brand text-decoration-none">
+                    <span class="site-brand-icon">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </span>
+                    <span class="site-brand-copy">
+                        <span class="site-brand-title d-block">Forum</span>
+                        <span class="site-brand-subtitle d-block">Share ideas, ask questions, and join discussions</span>
+                    </span>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-7">
+                <form class="input-group site-search-form" action="{{ search_url|default:'/search/' }}" method="get">
+                    <button class="btn site-search-button" type="submit" aria-label="Search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    <input
+                        class="form-control site-search-input"
+                        type="search"
+                        name="q"
+                        placeholder="Search topics or posts..."
+                        value="{{ request.GET.q|default:'' }}"
+                        aria-label="Search topics or posts"
+                    >
+                </form>
+            </div>
+
+            <div class="col-lg-4 text-center text-lg-end">
+                <div class="site-auth-actions">
+                {% if user.is_authenticated %}
+                    <a href="{{ edit_profile_url|default:'/edit-profile/' }}" class="btn btn-outline-light btn-sm">Edit Profile</a>
+                    <a href="{{ logout_url|default:'/logout/' }}" class="btn btn-light btn-sm">Log Out</a>
+                {% else %}
+                    <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-light btn-sm">Log In</a>
+                    <a href="{{ sign_up_url|default:'/sign-up/' }}" class="btn btn-light btn-sm">Sign Up</a>
+                {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>

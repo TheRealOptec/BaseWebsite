@@ -1,4 +1,7 @@
 {% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:login' as login_url %}
+{% url 'mybase:sign_up' as sign_up_url %}
 
 {% block title %}
     {% if topic %}Make Post - {{ topic.name }}{% else %}Make Post{% endif %}
@@ -25,10 +28,14 @@
                     {% endif %}
 
                     <div class="d-grid gap-2">
-                        <a href="/topic/{{ topic.slug }}/" class="btn btn-outline-secondary btn-sm">
+                        {% url 'mybase:topic_detail' topic.slug as topic_detail_url %}
+                        <a
+                            href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/topic/{{ topic.slug }}/{% endif %}"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
                             Back to Topic
                         </a>
-                        <a href="/home/" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">
                             Home
                         </a>
                     </div>
@@ -144,11 +151,15 @@
                             </button>
 
                             {% if topic %}
-                                <a href="/topic/{{ topic.slug }}/" class="btn btn-outline-secondary">
+                                {% url 'mybase:topic_detail' topic.slug as cancel_topic_url %}
+                                <a
+                                    href="{% if cancel_topic_url %}{{ cancel_topic_url }}{% else %}/topic/{{ topic.slug }}/{% endif %}"
+                                    class="btn btn-outline-secondary"
+                                >
                                     Cancel
                                 </a>
                             {% else %}
-                                <a href="/home/" class="btn btn-outline-secondary">
+                                <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-secondary">
                                     Cancel
                                 </a>
                             {% endif %}
@@ -160,8 +171,8 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <a href="/login/" class="btn btn-outline-primary">Log In</a>
-                        <a href="/sign-up/" class="btn btn-success">Sign Up</a>
+                        <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-primary">Log In</a>
+                        <a href="{{ sign_up_url|default:'/sign-up/' }}" class="btn btn-success">Sign Up</a>
                     </div>
                 {% endif %}
 

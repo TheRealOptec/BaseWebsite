@@ -1,4 +1,6 @@
 {% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:login' as login_url %}
 
 {% block title %}
     {% if post %}{{ post.title }}{% else %}Post Detail{% endif %}
@@ -27,9 +29,13 @@
                     </p>
 
                     {% if post.topic %}
+                        {% url 'mybase:topic_detail' post.topic.slug as post_topic_url %}
                         <p class="small mb-3">
                             Topic:
-                            <a href="/topic/{{ post.topic.slug }}/" class="text-decoration-none">
+                            <a
+                                href="{% if post_topic_url %}{{ post_topic_url }}{% else %}/topic/{{ post.topic.slug }}/{% endif %}"
+                                class="text-decoration-none"
+                            >
                                 {{ post.topic.name }}
                             </a>
                         </p>
@@ -58,16 +64,24 @@
                 <h2 class="h6 mb-3">Navigation</h2>
 
                 <div class="d-grid gap-2">
-                    <a href="/home/" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
 
-                    {% if post.topic %}
-                        <a href="/topic/{{ post.topic.slug }}/" class="btn btn-outline-secondary btn-sm">
+                    {% if post and post.topic %}
+                        {% url 'mybase:topic_detail' post.topic.slug as sidebar_topic_url %}
+                        <a
+                            href="{% if sidebar_topic_url %}{{ sidebar_topic_url }}{% else %}/topic/{{ post.topic.slug }}/{% endif %}"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
                             Back to Topic
                         </a>
                     {% endif %}
 
-                    {% if user.is_authenticated and post.topic %}
-                        <a href="/topic/{{ post.topic.slug }}/make-post/" class="btn btn-primary btn-sm">
+                    {% if user.is_authenticated and post and post.topic %}
+                        {% url 'mybase:make_post' post.topic.slug as sidebar_make_post_url %}
+                        <a
+                            href="{% if sidebar_make_post_url %}{{ sidebar_make_post_url }}{% else %}/topic/{{ post.topic.slug }}/make-post/{% endif %}"
+                            class="btn btn-primary btn-sm"
+                        >
                             Make New Post
                         </a>
                     {% endif %}
@@ -83,8 +97,12 @@
                 {% if top_topics %}
                     <ul class="list-group list-group-flush">
                         {% for t in top_topics %}
+                            {% url 'mybase:topic_detail' t.slug as top_topic_url %}
                             <li class="list-group-item px-0">
-                                <a href="/topic/{{ t.slug }}/" class="text-decoration-none">
+                                <a
+                                    href="{% if top_topic_url %}{{ top_topic_url }}{% else %}/topic/{{ t.slug }}/{% endif %}"
+                                    class="text-decoration-none"
+                                >
                                     {{ t.name }}
                                 </a>
                             </li>
@@ -139,7 +157,7 @@
                             <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded shadow-sm">
                         {% else %}
                             <div class="border rounded text-center text-muted p-5">
-                                Image (optional)
+                                No image attached to this post.
                             </div>
                         {% endif %}
                     </div>
@@ -153,29 +171,6 @@
                         {% endif %}
                     </div>
 
-                    <!-- Post actions -->
-                    <div class="d-flex flex-wrap gap-2">
-                        {% if user.is_authenticated %}
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-hand-thumbs-up"></i> Like
-                            </button>
-                        {% endif %}
-
-                        {% if user.is_authenticated and post.author == user %}
-                            <a href="#" class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-pencil"></i> Edit
-                            </a>
-                            <a href="#" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
-                        {% endif %}
-
-                        {% if user.is_authenticated %}
-                            <a href="#" class="btn btn-outline-warning btn-sm">
-                                <i class="bi bi-flag"></i> Report
-                            </a>
-                        {% endif %}
-                    </div>
                 {% else %}
                     <h1 class="h3">Post Detail</h1>
                     <p class="text-muted mb-0">Post not found.</p>
@@ -212,12 +207,6 @@
                                         {% endif %}
                                     </div>
 
-                                    {% if user.is_authenticated and comment.author == user %}
-                                        <div class="d-flex gap-2">
-                                            <a href="#" class="btn btn-outline-secondary btn-sm">Edit</a>
-                                            <a href="#" class="btn btn-outline-danger btn-sm">Delete</a>
-                                        </div>
-                                    {% endif %}
                                 </div>
 
                                 <div>
@@ -246,7 +235,17 @@
                         {% csrf_token %}
 
                         {% if comment_form %}
-                            {{ comment_form.as_p }}
+                            {{ comment_form.non_field_errors }}
+
+                            {% if comment_form.body %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ comment_form.body.id_for_label }}">Your Comment</label>
+                                    {{ comment_form.body }}
+                                    {% if comment_form.body.errors %}
+                                        <div class="text-danger small mt-1">{{ comment_form.body.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         {% else %}
                             <div class="mb-3">
                                 <label for="commentBody" class="form-label">Your Comment</label>
@@ -266,7 +265,7 @@
                     </form>
                 {% else %}
                     <p class="text-muted mb-3">You need to log in to add a comment.</p>
-                    <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
+                    <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-primary btn-sm">Log In</a>
                 {% endif %}
             </div>
         </div>
