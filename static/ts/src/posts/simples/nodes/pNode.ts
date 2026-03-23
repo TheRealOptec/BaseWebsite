@@ -14,8 +14,9 @@ export class PNode implements ISimplesNode {
         return PNode.instance;
     }
 
-    public compile(frag: DocumentFragment, node: ChildNode): DocumentFragment {
-        console.log(node.textContent);
-        return frag;
+    public compile(fragHead: Node, node: ChildNode): void {
+        const pElem = document.createElement("p");
+        const test = new DocumentFragment();
+        test.getRootNode().childNodes;
     }
 }
