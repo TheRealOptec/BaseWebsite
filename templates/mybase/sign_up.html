@@ -1,4 +1,7 @@
 {% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:login' as login_url %}
+{% url 'mybase:edit_profile' as edit_profile_url %}
 
 {% block title %}Sign Up{% endblock %}
 
@@ -19,8 +22,8 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="/home/" class="btn btn-primary">Go to Home</a>
-                        <a href="/edit-profile/" class="btn btn-outline-secondary">Edit Profile</a>
+                        <a href="{{ home_url|default:'/home/' }}" class="btn btn-primary">Go to Home</a>
+                        <a href="{{ edit_profile_url|default:'/edit-profile/' }}" class="btn btn-outline-secondary">Edit Profile</a>
                     </div>
                 {% else %}
                     <form method="post" action="">
@@ -119,7 +122,7 @@
 
                     <div class="text-center">
                         <p class="text-muted mb-2">Already have an account?</p>
-                        <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
+                        <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-primary btn-sm">Log In</a>
                     </div>
                 {% endif %}
             </div>

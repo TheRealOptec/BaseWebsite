@@ -1,4 +1,8 @@
 {% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:login' as login_url %}
+{% url 'mybase:sign_up' as sign_up_url %}
+{% url 'mybase:edit_profile' as edit_profile_url %}
 
 {% block title %}Search{% endblock %}
 
@@ -39,12 +43,12 @@
             <div class="card-body">
                 <h2 class="h6 mb-3">Quick Links</h2>
                 <div class="d-grid gap-2">
-                    <a href="/home/" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
                     {% if user.is_authenticated %}
-                        <a href="/edit-profile/" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                        <a href="{{ edit_profile_url|default:'/edit-profile/' }}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
                     {% else %}
-                        <a href="/login/" class="btn btn-outline-primary btn-sm">Log In</a>
-                        <a href="/sign-up/" class="btn btn-success btn-sm">Sign Up</a>
+                        <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-primary btn-sm">Log In</a>
+                        <a href="{{ sign_up_url|default:'/sign-up/' }}" class="btn btn-success btn-sm">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
@@ -83,9 +87,13 @@
                 {% if topic_results %}
                     <div class="d-flex flex-column gap-3">
                         {% for topic in topic_results %}
+                            {% url 'mybase:topic_detail' topic.slug as topic_detail_url %}
                             <div class="border rounded p-3">
                                 <h3 class="h6 mb-1">
-                                    <a href="/topic/{{ topic.slug }}/" class="text-decoration-none">
+                                    <a
+                                        href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/topic/{{ topic.slug }}/{% endif %}"
+                                        class="text-decoration-none"
+                                    >
                                         {{ topic.name }}
                                     </a>
                                 </h3>
@@ -121,11 +129,15 @@
                 {% if post_results %}
                     <div class="d-flex flex-column gap-3">
                         {% for post in post_results %}
+                            {% url 'mybase:post_detail' post.slug as post_detail_url %}
                             <div class="border rounded p-3">
                                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-2">
                                     <div>
                                         <h3 class="h6 mb-1">
-                                            <a href="/post/{{ post.slug }}/" class="text-decoration-none">
+                                            <a
+                                                href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/post/{{ post.slug }}/{% endif %}"
+                                                class="text-decoration-none"
+                                            >
                                                 {{ post.title }}
                                             </a>
                                         </h3>
