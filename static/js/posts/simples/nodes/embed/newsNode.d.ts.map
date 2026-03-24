@@ -1,0 +1,1 @@
+{"version":3,"file":"newsNode.d.ts","sourceRoot":"","sources":["../../../../../ts/src/posts/simples/nodes/embed/newsNode.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,uBAAuB,CAAC;AAG1D,qBAAa,QAAS,YAAW,YAAY;IAEzC,OAAO,CAAC,MAAM,CAAC,QAAQ,CAAuB;IAE9C,OAAO;WAIO,WAAW,IAAI,YAAY;IAKlC,OAAO,CAAC,QAAQ,EAAE,IAAI,EAAE,IAAI,EAAE,SAAS,GAAG,IAAI;CAGxD"}

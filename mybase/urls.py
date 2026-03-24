@@ -5,4 +5,5 @@ app_name = 'mybase'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('apis/', views.api_handler, name='api_handler'),
 ]

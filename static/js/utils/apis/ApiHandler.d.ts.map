@@ -1,0 +1,1 @@
+{"version":3,"file":"ApiHandler.d.ts","sourceRoot":"","sources":["../../../ts/src/utils/apis/ApiHandler.ts"],"names":[],"mappings":"AACA,qBAAa,UAAU;IACnB,OAAO,CAAC,MAAM,CAAC,QAAQ,CAA0B;WAEnC,UAAU,CAAC,KAAK,EAAE,CAAC,CAAC,KAAK,EAAE,GAAG,KAAK,GAAG,CAAC;CAKxD"}
