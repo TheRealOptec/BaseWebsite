@@ -20,6 +20,19 @@ export class NewsNode extends CompNodeParent {
         }
         newsNode.compile(fragHead, node, params);
     }
+    static addRequestResults(fragHead, options, json) {
+        const articlesArr = json["articles"];
+        if (options === undefined)
+            return;
+        const articlesCount = (options["top"] === undefined) ? articlesArr.length : options["top"];
+        for (let i = 0; i < Math.min(articlesCount, articlesArr.length); i++) {
+            const article = articlesArr[i];
+            const elem = document.createElement("a");
+            elem.innerHTML = article["title"];
+            elem.setAttribute("href", article["url"]);
+            fragHead.appendChild(elem);
+        }
+    }
     compile(fragHead, node, params) {
         const apiParams = {
             "req": { "api": "news" },
@@ -28,7 +41,10 @@ export class NewsNode extends CompNodeParent {
         for (let child of node.childNodes) {
             this.compileNewsNode(fragHead, child, apiParams);
         }
-        ApiHandler.makeReq(json => console.log(json), apiParams["req"]);
+        ApiHandler.makeReq(json => {
+            console.log(json);
+            NewsNode.addRequestResults(fragHead, apiParams["options"], json);
+        }, apiParams["req"]);
     }
 }
 NewsNode.instance = null;

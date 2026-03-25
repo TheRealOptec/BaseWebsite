@@ -11,12 +11,11 @@ export class NewsTopNode {
     }
     compile(fragHead, node, params) {
         if (node.textContent !== null) {
-            const req = params["req"];
+            const req = params["options"];
             if (req === undefined) {
                 return;
             }
-            console.log(node.textContent);
-            req["totalResults"] = node.textContent;
+            req["top"] = node.textContent;
         }
         else
             SimplesCompiler.reportError("No content provided to from tag - content required");
