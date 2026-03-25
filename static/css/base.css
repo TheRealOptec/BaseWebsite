@@ -65,6 +65,7 @@ body.site-body {
 }
 
 .site-search-form {
+    flex: 1 1 auto;
     box-shadow: 0 10px 24px rgba(21, 35, 73, 0.12);
 }
 
@@ -101,6 +102,58 @@ body.site-body {
 .site-search-input:focus {
     background: var(--site-surface);
     box-shadow: none;
+}
+
+.site-search-tools {
+    align-items: stretch;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.site-filter-button {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.95rem;
+    color: #ffffff;
+    display: inline-flex;
+    gap: 0.55rem;
+    justify-content: center;
+    min-height: 2.9rem;
+    min-width: 8.75rem;
+    padding-inline: 1rem;
+}
+
+.site-filter-button:hover,
+.site-filter-button:focus,
+.site-filter-button.show {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.42);
+    color: #ffffff;
+}
+
+.site-filter-menu {
+    border: 1px solid var(--site-border);
+    border-radius: 1rem;
+    box-shadow: var(--site-shadow);
+    min-width: 18rem;
+}
+
+.site-filter-title {
+    color: var(--site-text);
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.site-filter-copy,
+.site-filter-group-label {
+    color: var(--site-muted);
+    font-size: 0.88rem;
+}
+
+.site-filter-group-label {
+    display: block;
+    font-weight: 600;
 }
 
 .site-auth-actions {
@@ -262,6 +315,47 @@ ul.errorlist {
     width: 120px;
 }
 
+.simples-mode-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.simples-preview-panel {
+    border: 1px dashed var(--site-border);
+    border-radius: 1rem;
+    padding: 0.9rem;
+}
+
+.simples-preview-surface,
+.simples-rendered-content {
+    background: var(--site-surface-soft);
+    border: 1px solid var(--site-border);
+    border-radius: 0.95rem;
+    min-height: 8rem;
+    padding: 1rem 1.1rem;
+}
+
+.simples-preview-surface h1,
+.simples-rendered-content h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+.simples-preview-surface p,
+.simples-rendered-content p {
+    margin-bottom: 1rem;
+}
+
+.simples-preview-surface p:last-child,
+.simples-rendered-content p:last-child {
+    margin-bottom: 0;
+}
+
+.simples-plain-text {
+    white-space: pre-line;
+}
+
 @media (max-width: 991.98px) {
     .site-header {
         text-align: center;
@@ -273,6 +367,14 @@ ul.errorlist {
 
     .site-brand-copy {
         text-align: left;
+    }
+
+    .site-search-tools {
+        flex-direction: column;
+    }
+
+    .site-filter-button {
+        width: 100%;
     }
 }
 

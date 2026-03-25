@@ -1,4 +1,5 @@
 {% extends 'mybase/base.html' %}
+{% load static %}
 {% url 'mybase:home' as home_url %}
 {% url 'mybase:login' as login_url %}
 
@@ -165,7 +166,11 @@
                     <!-- Post body -->
                     <div class="mb-4">
                         {% if post.body %}
-                            <p class="mb-0">{{ post.body|linebreaks }}</p>
+                            <textarea id="postBodySource" class="d-none" aria-hidden="true">{{ post.body }}</textarea>
+                            <div id="postBodyContent" class="simples-rendered-content"></div>
+                            <noscript>
+                                <p class="simples-plain-text mb-0">{{ post.body }}</p>
+                            </noscript>
                         {% else %}
                             <p class="text-muted mb-0">No content available.</p>
                         {% endif %}
@@ -272,4 +277,41 @@
 
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="module">
+        import {} from "{% static 'js/posts/simples/NodeInit.js' %}";
+        import { SimplesCompiler } from "{% static 'js/posts/simples/SimplesCompiler.js' %}";
+
+        const postBodySource = document.getElementById("postBodySource");
+        const postBodyContent = document.getElementById("postBodyContent");
+
+        function renderPlainText(source, target) {
+            target.innerHTML = "";
+            const paragraph = document.createElement("p");
+            paragraph.className = "simples-plain-text mb-0";
+            paragraph.textContent = source;
+            target.appendChild(paragraph);
+        }
+
+        if (postBodySource && postBodyContent) {
+            const source = postBodySource.value.trim();
+
+            if (!source) {
+                postBodyContent.innerHTML = '<p class="text-muted mb-0">No content available.</p>';
+            } else {
+                try {
+                    if (source.startsWith("<simples")) {
+                        postBodyContent.appendChild(SimplesCompiler.compile(source));
+                    } else {
+                        renderPlainText(source, postBodyContent);
+                    }
+                } catch (error) {
+                    renderPlainText(source, postBodyContent);
+                }
+            }
+        }
+    </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'mybase/base.html' %}
+{% load static %}
 {% url 'mybase:home' as home_url %}
 {% url 'mybase:login' as login_url %}
 {% url 'mybase:sign_up' as sign_up_url %}
@@ -77,7 +78,7 @@
                 </div>
 
                 {% if user.is_authenticated %}
-                    <form method="post" action="" enctype="multipart/form-data">
+                    <form method="post" action="" enctype="multipart/form-data" data-simples-form>
                         {% csrf_token %}
 
                         {% if post_form %}
@@ -91,12 +92,33 @@
                                 {% endif %}
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label class="form-label" for="{{ post_form.body.id_for_label }}">Post Content</label>
-                                {{ post_form.body }}
-                                {% if post_form.body.errors %}
-                                    <div class="text-danger small mt-1">{{ post_form.body.errors }}</div>
-                                {% endif %}
+                                <p class="helptext mb-3">
+                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output.
+                                </p>
+
+                                <div class="simples-mode-switch mb-3" data-simples-toggle>
+                                    <button type="button" class="btn btn-primary btn-sm" data-simples-mode="edit" aria-pressed="true">
+                                        Edit Raw Simples
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-simples-mode="preview" aria-pressed="false">
+                                        Preview Output
+                                    </button>
+                                </div>
+
+                                <div data-simples-editor-panel>
+                                    {{ post_form.body }}
+                                    {% if post_form.body.errors %}
+                                        <div class="text-danger small mt-1">{{ post_form.body.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
+                                    <div class="simples-preview-surface" data-simples-preview-output>
+                                        <p class="text-muted mb-0">Preview your compiled post here.</p>
+                                    </div>
+                                </div>
                             </div>
 
                             {% if post_form.image %}
@@ -121,16 +143,37 @@
                                 >
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="postBody" class="form-label">Post Content</label>
-                                <textarea
-                                    id="postBody"
-                                    name="body"
-                                    rows="8"
-                                    class="form-control"
-                                    placeholder="Write your post here..."
-                                    required
-                                ></textarea>
+                                <p class="helptext mb-3">
+                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output.
+                                </p>
+
+                                <div class="simples-mode-switch mb-3" data-simples-toggle>
+                                    <button type="button" class="btn btn-primary btn-sm" data-simples-mode="edit" aria-pressed="true">
+                                        Edit Raw Simples
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-simples-mode="preview" aria-pressed="false">
+                                        Preview Output
+                                    </button>
+                                </div>
+
+                                <div data-simples-editor-panel>
+                                    <textarea
+                                        id="postBody"
+                                        name="body"
+                                        rows="8"
+                                        class="form-control"
+                                        placeholder="Write your post here..."
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
+                                    <div class="simples-preview-surface" data-simples-preview-output>
+                                        <p class="text-muted mb-0">Preview your compiled post here.</p>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-4">
@@ -180,4 +223,77 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="module">
+        import {} from "{% static 'js/posts/simples/NodeInit.js' %}";
+        import { SimplesCompiler } from "{% static 'js/posts/simples/SimplesCompiler.js' %}";
+
+        const postForm = document.querySelector("[data-simples-form]");
+        const bodyInput = postForm?.querySelector("textarea[name='body']");
+        const editorPanel = postForm?.querySelector("[data-simples-editor-panel]");
+        const previewPanel = postForm?.querySelector("[data-simples-preview-panel]");
+        const previewOutput = postForm?.querySelector("[data-simples-preview-output]");
+        const editButton = postForm?.querySelector("[data-simples-mode='edit']");
+        const previewButton = postForm?.querySelector("[data-simples-mode='preview']");
+
+        function renderPlainText(source, target) {
+            target.innerHTML = "";
+            const paragraph = document.createElement("p");
+            paragraph.className = "simples-plain-text mb-0";
+            paragraph.textContent = source;
+            target.appendChild(paragraph);
+        }
+
+        function renderPreview() {
+            if (!bodyInput || !previewOutput) {
+                return;
+            }
+
+            const source = bodyInput.value.trim();
+            previewOutput.innerHTML = "";
+
+            if (!source) {
+                previewOutput.innerHTML = '<p class="text-muted mb-0">Nothing to preview yet.</p>';
+                return;
+            }
+
+            try {
+                if (source.startsWith("<simples")) {
+                    previewOutput.appendChild(SimplesCompiler.compile(source));
+                } else {
+                    renderPlainText(source, previewOutput);
+                }
+            } catch (error) {
+                renderPlainText(source, previewOutput);
+            }
+        }
+
+        function setMode(mode) {
+            if (!editorPanel || !previewPanel || !editButton || !previewButton) {
+                return;
+            }
+
+            const isPreview = mode === "preview";
+            editorPanel.classList.toggle("d-none", isPreview);
+            previewPanel.classList.toggle("d-none", !isPreview);
+
+            editButton.className = isPreview ? "btn btn-outline-secondary btn-sm" : "btn btn-primary btn-sm";
+            previewButton.className = isPreview ? "btn btn-primary btn-sm" : "btn btn-outline-secondary btn-sm";
+
+            editButton.setAttribute("aria-pressed", String(!isPreview));
+            previewButton.setAttribute("aria-pressed", String(isPreview));
+
+            if (isPreview) {
+                renderPreview();
+            }
+        }
+
+        if (postForm && bodyInput) {
+            editButton?.addEventListener("click", () => setMode("edit"));
+            previewButton?.addEventListener("click", () => setMode("preview"));
+        }
+    </script>
 {% endblock %}
