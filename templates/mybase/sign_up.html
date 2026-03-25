@@ -26,43 +26,42 @@
                         <a href="{{ edit_profile_url|default:'/edit-profile/' }}" class="btn btn-outline-secondary">Edit Profile</a>
                     </div>
                 {% else %}
-                    <form method="post" action="">
+                    <form method="post" action="/mybase/sign_up/">
                         {% csrf_token %}
 
-                        {% if form %}
-                            {{ form.non_field_errors }}
-
+                        {% if user_form %}
+                            {{ user_form.non_field_errors }}
                             <div class="mb-3">
-                                <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                <label class="form-label" for="{{ user_form.username.id_for_label }}">Username</label>
+                                {{ user_form.username }}
+                                {% if user_form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ user_form.username.errors }}</div>
                                 {% endif %}
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {{ user_form.email }}
+                                {% if user_form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ user_form.email.errors }}</div>
                                 {% endif %}
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                                <label class="form-label" for="{{ user_form.password1.id_for_label }}">Password</label>
+                                {{ user_form.password }}
+                                {% if user_form.password.errors %}
+                                    <div class="text-danger small mt-1">{{ user_form.password.errors }}</div>
                                 {% endif %}
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                            <!--<div class="mb-4">
+                                <label class="form-label" for="{{ user_form.password2.id_for_label }}">Confirm Password</label>
+                                {{ user_form.password2 }}
+                                {% if user_form.password2.errors %}
+                                    <div class="text-danger small mt-1">{{ user_form.password2.errors }}</div>
                                 {% endif %}
-                            </div>
+                            </div>-->
                         {% else %}
                             <div class="mb-3">
                                 <label for="signUpUsername" class="form-label">Username</label>
@@ -93,14 +92,14 @@
                                 <input
                                     type="password"
                                     id="signUpPassword1"
-                                    name="password1"
+                                    name="password"
                                     class="form-control"
                                     placeholder="Create a password"
                                     required
                                 >
                             </div>
 
-                            <div class="mb-4">
+                            <!--<div class="mb-4">
                                 <label for="signUpPassword2" class="form-label">Confirm Password</label>
                                 <input
                                     type="password"
@@ -110,7 +109,7 @@
                                     placeholder="Repeat your password"
                                     required
                                 >
-                            </div>
+                            </div>-->
                         {% endif %}
 
                         <div class="d-grid mb-3">

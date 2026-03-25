@@ -37,20 +37,22 @@ def sign_up(request):
             if 'pfp' in request.FILES:
                 profile.pfp = request.FILES['pfp']
             
-            profile.save()
+            # This causes an error and I'm not sure why
+            #profile.save()
+            return redirect(reverse("mybase:home"))
         else:
             print(user_form.errors, profile_form.errors)
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
-
-    return render(request, "mybase/sign_up.html", content_type={
+    
+    return render(request, "mybase/sign_up.html", context={
         "user_form": user_form,
         "profile_form": profile_form
     })
 
 def user_login(request):
-    return render(request, 'mybase/login.html', content_type={})
+    return render(request, 'mybase/login.html', context={})
 
 @login_required
 def user_logout(request):
