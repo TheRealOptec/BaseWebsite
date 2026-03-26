@@ -44,7 +44,7 @@
 
                     <div class="d-flex flex-wrap gap-2">
                         <span class="badge bg-primary">
-                            Likes: {{ post.likes|default:post.total_likes|default:0 }}
+                            Likes: {{ post.likes|default:post.likes|default:0 }}
                         </span>
                         <span class="badge bg-secondary">
                             Comments: {{ comments|length|default:0 }}
@@ -141,7 +141,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <span class="badge bg-primary">
-                                Likes: {{ post.likes|default:post.total_likes|default:0 }}
+                                Likes: {{ post.likes|default:post.likes|default:0 }}
                             </span>
                             <span class="badge bg-secondary">
                                 Comments: {{ comments|length|default:0 }}
