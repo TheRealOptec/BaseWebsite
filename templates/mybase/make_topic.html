@@ -1,7 +1,7 @@
 {% extends 'mybase/base.html' %}
 {% url 'mybase:home' as home_url %}
-{% url 'mybase:login' as login_url %}
-{% url 'mybase:sign_up' as sign_up_url %}
+{% url 'user_login' as login_url %}
+{% url 'sign_up' as sign_up_url %}
 {% url 'mybase:posting_guide' as posting_guide_url %}
 
 {% block title %}Make Topic{% endblock %}
@@ -28,12 +28,18 @@
                 <p class="text-muted small mb-3">
                     We also added a quick guide explaining how posts should be written and previewed.
                 </p>
-                <a
-                    href="{% if posting_guide_url %}{{ posting_guide_url }}{% else %}/posting-guide/{% endif %}"
-                    class="btn btn-outline-primary btn-sm w-100"
-                >
-                    Read Posting Guide
-                </a>
+                {% if posting_guide_url %}
+                    <a
+                        href="{{ posting_guide_url }}"
+                        class="btn btn-outline-primary btn-sm w-100"
+                    >
+                        Read Posting Guide
+                    </a>
+                {% else %}
+                    <span class="btn btn-outline-primary btn-sm w-100 disabled" aria-disabled="true" tabindex="-1">
+                        Read Posting Guide
+                    </span>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -111,7 +117,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-plus-lg"></i> Create Topic
                             </button>
-                            <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-secondary">
+                            <a href="{{ home_url|default:'/mybase/' }}" class="btn btn-outline-secondary">
                                 Cancel
                             </a>
                         </div>

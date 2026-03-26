@@ -1,7 +1,7 @@
 {% extends 'mybase/base.html' %}
-{% url 'mybase:login' as login_url %}
-{% url 'mybase:sign_up' as sign_up_url %}
-{% url 'mybase:profile' user.username as profile_url %}
+{% url 'user_login' as login_url %}
+{% url 'sign_up' as sign_up_url %}
+{% url 'view_profile' user.username as profile_url %}
 
 {% block title %}Edit Profile{% endblock %}
 
@@ -97,6 +97,14 @@
                                                         <div class="text-danger small mt-1">{{ profile_form.profile_picture.errors }}</div>
                                                     {% endif %}
                                                 </div>
+                                            {% elif profile_form.pfp %}
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="{{ profile_form.pfp.id_for_label }}">Profile Picture</label>
+                                                    {{ profile_form.pfp }}
+                                                    {% if profile_form.pfp.errors %}
+                                                        <div class="text-danger small mt-1">{{ profile_form.pfp.errors }}</div>
+                                                    {% endif %}
+                                                </div>
                                             {% endif %}
 
                                             {% if profile_form.bio %}
@@ -114,7 +122,7 @@
                                                 <input
                                                     type="file"
                                                     id="editProfilePicture"
-                                                    name="profile_picture"
+                                                    name="pfp"
                                                     class="form-control"
                                                     accept="image/*"
                                                 >

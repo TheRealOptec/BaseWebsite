@@ -1,7 +1,7 @@
 {% extends 'mybase/base.html' %}
 {% load static %}
 {% url 'mybase:home' as home_url %}
-{% url 'mybase:login' as login_url %}
+{% url 'user_login' as login_url %}
 
 {% block title %}
     {% if post %}{{ post.title }}{% else %}Post Detail{% endif %}
@@ -30,11 +30,11 @@
                     </p>
 
                     {% if post.topic %}
-                        {% url 'mybase:topic_detail' post.topic.slug as post_topic_url %}
+                        {% url 'mybase:view_topic' post.topic.slug as post_topic_url %}
                         <p class="small mb-3">
                             Topic:
                             <a
-                                href="{% if post_topic_url %}{{ post_topic_url }}{% else %}/topic/{{ post.topic.slug }}/{% endif %}"
+                                href="{% if post_topic_url %}{{ post_topic_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/{% endif %}"
                                 class="text-decoration-none"
                             >
                                 {{ post.topic.name }}
@@ -65,12 +65,12 @@
                 <h2 class="h6 mb-3">Navigation</h2>
 
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{{ home_url|default:'/mybase/' }}" class="btn btn-outline-primary btn-sm">Home</a>
 
                     {% if post and post.topic %}
-                        {% url 'mybase:topic_detail' post.topic.slug as sidebar_topic_url %}
+                        {% url 'mybase:view_topic' post.topic.slug as sidebar_topic_url %}
                         <a
-                            href="{% if sidebar_topic_url %}{{ sidebar_topic_url }}{% else %}/topic/{{ post.topic.slug }}/{% endif %}"
+                            href="{% if sidebar_topic_url %}{{ sidebar_topic_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/{% endif %}"
                             class="btn btn-outline-secondary btn-sm"
                         >
                             Back to Topic
@@ -80,7 +80,7 @@
                     {% if user.is_authenticated and post and post.topic %}
                         {% url 'mybase:make_post' post.topic.slug as sidebar_make_post_url %}
                         <a
-                            href="{% if sidebar_make_post_url %}{{ sidebar_make_post_url }}{% else %}/topic/{{ post.topic.slug }}/make-post/{% endif %}"
+                            href="{% if sidebar_make_post_url %}{{ sidebar_make_post_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/make-post/{% endif %}"
                             class="btn btn-primary btn-sm"
                         >
                             Make New Post
@@ -98,10 +98,10 @@
                 {% if top_topics %}
                     <ul class="list-group list-group-flush">
                         {% for t in top_topics %}
-                            {% url 'mybase:topic_detail' t.slug as top_topic_url %}
+                            {% url 'mybase:view_topic' t.slug as top_topic_url %}
                             <li class="list-group-item px-0">
                                 <a
-                                    href="{% if top_topic_url %}{{ top_topic_url }}{% else %}/topic/{{ t.slug }}/{% endif %}"
+                                    href="{% if top_topic_url %}{{ top_topic_url }}{% else %}/mybase/topic/{{ t.slug }}/{% endif %}"
                                     class="text-decoration-none"
                                 >
                                     {{ t.name }}
@@ -296,22 +296,34 @@
             target.appendChild(paragraph);
         }
 
-        if (postBodySource && postBodyContent) {
+        async function renderPostBody() {
+            if (!postBodySource || !postBodyContent) {
+                return;
+            }
+
             const source = postBodySource.value.trim();
 
             if (!source) {
                 postBodyContent.innerHTML = '<p class="text-muted mb-0">No content available.</p>';
-            } else {
-                try {
-                    if (source.startsWith("<simples")) {
-                        postBodyContent.appendChild(SimplesCompiler.compile(source));
-                    } else {
-                        renderPlainText(source, postBodyContent);
-                    }
-                } catch (error) {
-                    renderPlainText(source, postBodyContent);
-                }
+                return;
+            }
+
+            if (!source.startsWith("<simples")) {
+                renderPlainText(source, postBodyContent);
+                return;
+            }
+
+            postBodyContent.innerHTML = '<p class="text-muted mb-0">Rendering post...</p>';
+
+            try {
+                const compiledContent = await SimplesCompiler.compile(source);
+                postBodyContent.innerHTML = "";
+                postBodyContent.appendChild(compiledContent);
+            } catch (error) {
+                renderPlainText(source, postBodyContent);
             }
         }
+
+        renderPostBody();
     </script>
 {% endblock %}

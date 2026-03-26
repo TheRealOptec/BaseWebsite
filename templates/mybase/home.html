@@ -1,9 +1,9 @@
 {% extends 'mybase/base.html' %}
 {% url 'mybase:home' as home_url %}
-{% url 'mybase:login' as login_url %}
-{% url 'mybase:sign_up' as sign_up_url %}
-{% url 'mybase:edit_profile' as edit_profile_url %}
-{% url 'mybase:logout' as logout_url %}
+{% url 'user_login' as login_url %}
+{% url 'sign_up' as sign_up_url %}
+{% url 'edit_user_profile' as edit_profile_url %}
+{% url 'user_logout' as logout_url %}
 {% url 'mybase:make_topic' as make_topic_url %}
 {% url 'mybase:posting_guide' as posting_guide_url %}
 
@@ -46,9 +46,9 @@
                 {% if topics %}
                     <div class="list-group">
                         {% for topic in topics %}
-                            {% url 'mybase:topic_detail' topic.slug as topic_detail_url %}
+                            {% url 'mybase:view_topic' topic.slug as topic_detail_url %}
                             <a
-                                href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/topic/{{ topic.slug }}/{% endif %}"
+                                href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/mybase/topic/{{ topic.slug }}/{% endif %}"
                                 class="list-group-item list-group-item-action"
                             >
                                 <div class="d-flex w-100 justify-content-between align-items-center">
@@ -79,9 +79,9 @@
                 {% if recent_posts %}
                     <div class="list-group">
                         {% for post in recent_posts %}
-                            {% url 'mybase:post_detail' post.slug as post_detail_url %}
+                            {% url 'mybase:view_post' post.topic.slug post.slug as post_detail_url %}
                             <a
-                                href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/post/{{ post.slug }}/{% endif %}"
+                                href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/post/{{ post.slug }}{% endif %}"
                                 class="list-group-item list-group-item-action"
                             >
                                 <div class="d-flex w-100 justify-content-between align-items-center">
@@ -167,16 +167,22 @@
             <div class="card-body">
                 <h2 class="h6 mb-3">Quick Links</h2>
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
-                    <a
-                        href="{% if posting_guide_url %}{{ posting_guide_url }}{% else %}/posting-guide/{% endif %}"
-                        class="btn btn-outline-secondary btn-sm"
-                    >
-                        Posting Guide
-                    </a>
+                    <a href="{{ home_url|default:'/mybase/' }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    {% if posting_guide_url %}
+                        <a
+                            href="{{ posting_guide_url }}"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
+                            Posting Guide
+                        </a>
+                    {% else %}
+                        <span class="btn btn-outline-secondary btn-sm disabled" aria-disabled="true" tabindex="-1">
+                            Posting Guide
+                        </span>
+                    {% endif %}
                     {% if user.is_authenticated %}
                         <a
-                            href="{% if make_topic_url %}{{ make_topic_url }}{% else %}/make-topic/{% endif %}"
+                            href="{% if make_topic_url %}{{ make_topic_url }}{% else %}/mybase/make-topic/{% endif %}"
                             class="btn btn-primary btn-sm"
                         >
                             Make Topic

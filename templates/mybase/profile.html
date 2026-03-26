@@ -1,8 +1,8 @@
 {% extends 'mybase/base.html' %}
 {% url 'mybase:home' as home_url %}
 {% url 'mybase:search' as search_url %}
-{% url 'mybase:logout' as logout_url %}
-{% url 'mybase:edit_profile' as edit_profile_url %}
+{% url 'user_logout' as logout_url %}
+{% url 'edit_user_profile' as edit_profile_url %}
 
 {% block title %}
     {% if profile_user %}{{ profile_user.username }}'s Profile{% else %}Profile{% endif %}
@@ -21,6 +21,12 @@
                     {% if profile and profile.profile_picture %}
                         <img
                             src="{{ profile.profile_picture.url }}"
+                            alt="Profile picture"
+                            class="img-fluid rounded-circle profile-avatar"
+                        >
+                    {% elif profile and profile.pfp %}
+                        <img
+                            src="{{ profile.pfp.url }}"
                             alt="Profile picture"
                             class="img-fluid rounded-circle profile-avatar"
                         >
@@ -54,8 +60,8 @@
             <div class="card-body">
                 <h2 class="h6 mb-3">Navigation</h2>
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
-                    <a href="{{ search_url|default:'/search/' }}" class="btn btn-outline-secondary btn-sm">Search</a>
+                    <a href="{{ home_url|default:'/mybase/' }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{{ search_url|default:'/mybase/search/' }}" class="btn btn-outline-secondary btn-sm">Search</a>
                     {% if user.is_authenticated %}
                         <a href="{{ logout_url|default:'/logout/' }}" class="btn btn-outline-danger btn-sm">Log Out</a>
                     {% endif %}
@@ -162,10 +168,10 @@
                     <div class="d-flex flex-column gap-3">
                         {% for post in user_posts %}
                             <div class="border rounded p-3">
-                                {% url 'mybase:post_detail' post.slug as post_detail_url %}
+                                {% url 'mybase:view_post' post.topic.slug post.slug as post_detail_url %}
                                 <h3 class="h6 mb-1">
                                     <a
-                                        href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/post/{{ post.slug }}/{% endif %}"
+                                        href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/post/{{ post.slug }}{% endif %}"
                                         class="text-decoration-none"
                                     >
                                         {{ post.title }}
@@ -173,11 +179,11 @@
                                 </h3>
 
                                 {% if post.topic %}
-                                    {% url 'mybase:topic_detail' post.topic.slug as topic_detail_url %}
+                                    {% url 'mybase:view_topic' post.topic.slug as topic_detail_url %}
                                     <p class="text-muted small mb-2">
                                         Topic:
                                         <a
-                                            href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/topic/{{ post.topic.slug }}/{% endif %}"
+                                            href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/{% endif %}"
                                             class="text-decoration-none"
                                         >
                                             {{ post.topic.name }}
