@@ -53,9 +53,9 @@ def sign_up(request):
     })
 
 def user_login(request):
-    print(f"I'm usering it: {request.method}")
+    invalid_details = False
+    account_disabled = False
     if request.method == "POST":
-        print("Posting")
         username = request.POST.get("username")
         password = request.POST.get("password")
 
@@ -66,10 +66,13 @@ def user_login(request):
                 login(request, user)
                 return redirect(reverse("mybase:home"))
             else:
-                return HttpResponse("Your account has been disabled")
+                account_disabled = True
         else:
-            return HttpResponse("Invalid login details suplied")
-    return render(request, 'mybase/login.html', context={  })
+            invalid_details = True
+    return render(request, 'mybase/login.html', context={
+        "invalid_details": invalid_details,
+        "account_disabled": account_disabled
+    })
 
 @login_required
 def user_logout(request):

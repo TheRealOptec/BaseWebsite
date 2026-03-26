@@ -71,6 +71,17 @@
                                     required
                                 >
                             </div>
+                            {% if account_disabled %}
+                                <div class="text-danger small mt-1">
+                                    Your account has been disabled
+                                </div>
+                            {% else %}
+                                {% if invalid_details %}
+                                <div class="text-danger small mt-1">
+                                    Invalid login details
+                                </div>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
 
                         <div class="d-grid mb-3">
