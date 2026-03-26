@@ -6,7 +6,7 @@ from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
-from mybase.models import Topic
+from mybase.models import Topic,Page
 
 from .apis.api_handler import ApiHandler
 
@@ -119,8 +119,30 @@ def make_topic(request):
 
 @login_required
 def make_post(request, topic_slug):
-    # TODO - db query here
-    return render(request, 'mybase/make_post.html', context={})
+    if request.method == "POST":
+        try:
+            topic = Topic.objects.get(slug=topic_slug)
+        except:
+            # TODO - remove this
+            return redirect(reverse('mybase:home'))
+        post = Page(
+            topic=topic,
+            title=request.POST.get('title', None)
+        )
+        post.save()
+        return render(request, 'mybase/make_post.html', context={
+            "topic": topic
+        })
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+    except:
+        topic = None
+    return render(request, 'mybase/make_post.html', context={
+        "topic": topic
+    })
 
 def api_handler(request):
     return ApiHandler.handleReq(request)
+
+def posting_guide(request):
+    return render(request, 'mybase/posting_guide.html', context={})
