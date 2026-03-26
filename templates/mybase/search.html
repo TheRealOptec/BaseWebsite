@@ -26,6 +26,34 @@
                     <p class="text-muted small mb-3">No search query entered.</p>
                 {% endif %}
 
+                <div class="mb-3">
+                    <p class="mb-2"><strong>Filters:</strong></p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-dark border">
+                            Search in:
+                            {% if request.GET.search_in == 'topics' %}
+                                Topics
+                            {% elif request.GET.search_in == 'posts' %}
+                                Posts
+                            {% else %}
+                                All
+                            {% endif %}
+                        </span>
+                        <span class="badge bg-light text-dark border">
+                            Sort by:
+                            {% if request.GET.sort_by == 'newest' %}
+                                Newest
+                            {% elif request.GET.sort_by == 'most_viewed' %}
+                                Most Viewed
+                            {% elif request.GET.sort_by == 'most_liked' %}
+                                Most Liked
+                            {% else %}
+                                Relevance
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between mb-2">
                     <span>Topics</span>
                     <span class="badge bg-primary">{{ topic_results|length|default:0 }}</span>
@@ -71,6 +99,12 @@
                 {% else %}
                     <p class="text-muted mb-0">
                         Use the search bar above to search for topics or posts.
+                    </p>
+                {% endif %}
+
+                {% if request.GET.search_in or request.GET.sort_by %}
+                    <p class="text-muted small mt-2 mb-0">
+                        The search request now includes the selected filter values from the top search bar.
                     </p>
                 {% endif %}
             </div>

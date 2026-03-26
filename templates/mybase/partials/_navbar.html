@@ -22,8 +22,8 @@
             </div>
 
             <div class="col-lg-4 col-md-7">
-                <div class="site-search-tools">
-                    <form class="input-group site-search-form" action="{{ search_url|default:'/search/' }}" method="get">
+                <form class="site-search-tools" action="{{ search_url|default:'/search/' }}" method="get">
+                    <div class="input-group site-search-form">
                         <button class="btn site-search-button" type="submit" aria-label="Search">
                             <i class="bi bi-search"></i>
                         </button>
@@ -35,7 +35,7 @@
                             value="{{ request.GET.q|default:'' }}"
                             aria-label="Search topics or posts"
                         >
-                    </form>
+                    </div>
 
                     <div class="dropdown">
                         <button
@@ -51,32 +51,34 @@
 
                         <div class="dropdown-menu dropdown-menu-end site-filter-menu p-3">
                             <p class="site-filter-title mb-2">Search Filters</p>
-                            <p class="site-filter-copy mb-3">UI placeholder for now. We can wire this up to real search filtering later.</p>
+                            <p class="site-filter-copy mb-3">These will now be submitted with the main search as GET parameters.</p>
 
                             <div class="site-filter-group mb-3">
-                                <span class="site-filter-group-label">Search In</span>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" disabled>All</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Topics</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Posts</button>
-                                </div>
+                                <label class="site-filter-group-label" for="siteSearchIn">Search In</label>
+                                <select class="form-select form-select-sm site-filter-select mt-2" id="siteSearchIn" name="search_in">
+                                    <option value="all" {% if request.GET.search_in == 'all' or not request.GET.search_in %}selected{% endif %}>All</option>
+                                    <option value="topics" {% if request.GET.search_in == 'topics' %}selected{% endif %}>Topics</option>
+                                    <option value="posts" {% if request.GET.search_in == 'posts' %}selected{% endif %}>Posts</option>
+                                </select>
                             </div>
 
                             <div class="site-filter-group mb-3">
-                                <span class="site-filter-group-label">Sort By</span>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Newest</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Most Viewed</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Most Liked</button>
-                                </div>
+                                <label class="site-filter-group-label" for="siteSortBy">Sort By</label>
+                                <select class="form-select form-select-sm site-filter-select mt-2" id="siteSortBy" name="sort_by">
+                                    <option value="relevance" {% if request.GET.sort_by == 'relevance' or not request.GET.sort_by %}selected{% endif %}>Relevance</option>
+                                    <option value="newest" {% if request.GET.sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                                    <option value="most_viewed" {% if request.GET.sort_by == 'most_viewed' %}selected{% endif %}>Most Viewed</option>
+                                    <option value="most_liked" {% if request.GET.sort_by == 'most_liked' %}selected{% endif %}>Most Liked</option>
+                                </select>
                             </div>
 
-                            <div class="site-filter-footer">
-                                <span class="badge text-bg-light border">Coming soon</span>
+                            <div class="site-filter-footer d-flex justify-content-between align-items-center gap-2">
+                                <span class="site-filter-copy mb-0">Submitted with the main search request.</span>
+                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             <div class="col-lg-4 text-center text-lg-end">

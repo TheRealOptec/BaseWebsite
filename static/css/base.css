@@ -151,9 +151,24 @@ body.site-body {
     font-size: 0.88rem;
 }
 
+.site-filter-copy {
+    line-height: 1.4;
+}
+
 .site-filter-group-label {
     display: block;
     font-weight: 600;
+}
+
+.site-filter-select {
+    background: #ffffff;
+    border-color: var(--site-border);
+    min-height: 2.65rem;
+}
+
+.site-filter-select:focus {
+    border-color: rgba(90, 118, 201, 0.5);
+    box-shadow: 0 0 0 0.22rem rgba(90, 118, 201, 0.16);
 }
 
 .site-auth-actions {
