@@ -138,7 +138,8 @@ def make_post(request, topic_slug):
             return redirect(reverse('mybase:home'))
         post = Page(
             topic=topic,
-            title=request.POST.get('title', None)
+            title=request.POST.get('title', None),
+            body=request.POST.get('body', "")
         )
         post.save()
         return render(request, 'mybase/make_post.html', context={

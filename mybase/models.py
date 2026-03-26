@@ -19,6 +19,7 @@ class Topic(models.Model):
 class Page(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     title = models.CharField(max_length=60)
+    body = models.CharField(max_length=500, default="")
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     slug = models.SlugField(unique=False)
