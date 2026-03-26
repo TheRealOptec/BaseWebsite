@@ -25,9 +25,9 @@
             <div class="card-body">
                 <h2 class="h6 mb-3">Related Pages</h2>
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{{ home_url|default:'/mybase/' }}" class="btn btn-outline-primary btn-sm">Home</a>
                     <a
-                        href="{% if make_topic_url %}{{ make_topic_url }}{% else %}/make-topic/{% endif %}"
+                        href="{% if make_topic_url %}{{ make_topic_url }}{% else %}/mybase/make-topic/{% endif %}"
                         class="btn btn-outline-secondary btn-sm"
                     >
                         Make Topic
