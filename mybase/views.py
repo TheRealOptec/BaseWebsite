@@ -120,8 +120,26 @@ def make_topic(request):
 @login_required
 def make_post(request, topic_slug):
     if request.method == "POST":
-        pass
-    return render(request, 'mybase/make_post.html', context={})
+        try:
+            topic = Topic.objects.get(slug=topic_slug)
+        except:
+            # TODO - remove this
+            return redirect(reverse('mybase:home'))
+        post = Page(
+            topic=topic,
+            title=request.POST.get('title', None)
+        )
+        post.save()
+        return render(request, 'mybase/make_post.html', context={
+            "topic": topic
+        })
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+    except:
+        topic = None
+    return render(request, 'mybase/make_post.html', context={
+        "topic": topic
+    })
 
 def api_handler(request):
     return ApiHandler.handleReq(request)

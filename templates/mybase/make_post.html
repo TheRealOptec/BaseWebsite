@@ -85,7 +85,7 @@
                 </div>
 
                 {% if user.is_authenticated %}
-                    <form method="post" action="" enctype="multipart/form-data" data-simples-form>
+                    <form method="post" enctype="multipart/form-data" data-simples-form>
                         {% csrf_token %}
 
                         {% if post_form %}
@@ -147,7 +147,7 @@
                                     class="form-control"
                                     placeholder="Enter your post title"
                                     required
-                                >
+                                />
                             </div>
 
                             <div class="mb-4">

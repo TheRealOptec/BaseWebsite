@@ -24,8 +24,8 @@ class Page(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-        super(Topic, self).save(*args, **kwargs)
-
+        super(Page, self).save(*args, **kwargs)
+    
     def __str__(self):
         return self.title
     
