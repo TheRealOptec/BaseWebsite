@@ -6,6 +6,8 @@ from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
+from mybase.models import Topic
+
 from .apis.api_handler import ApiHandler
 
 def home(request):
@@ -91,6 +93,31 @@ def view_post(request, topic_slug, post_name_slug):
     # TODO - db query here
     return render(request, 'mybase/post_detail.html', context={})
 
+def view_topic(request, topic_slug):
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+    except:
+        topic = None
+    return render(request, 'mybase/topic.html', context={
+        "topic": topic
+    })
+
+@login_required
+def make_topic(request):
+    # Adapted code from: https://www.w3schools.com/django/django_insert_data.php
+    if request.method == "POST":
+        topic_name = request.POST.get("name", None)
+        if topic_name is None:
+            # TODO - could change this
+            return redirect(reverse('mybase:make_topic'))
+        topic_description = request.POST.get("description", "")
+        topic = Topic(name=topic_name, description=topic_description)
+        topic.save()
+        # TODO - change this to a reverse
+        return redirect(f"/mybase/topic/{topic_name}/")
+    return render(request, 'mybase/make_topic.html', context={})
+
+@login_required
 def make_post(request, topic_slug):
     # TODO - db query here
     return render(request, 'mybase/make_post.html', context={})

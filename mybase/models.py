@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class Topic(models.Model):
     name = models.CharField(max_length=60, unique=True)
+    description = models.CharField(max_length=500, unique=False, default="")
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     slug = models.SlugField(unique=True)
