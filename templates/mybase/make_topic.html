@@ -1,0 +1,131 @@
+{% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:login' as login_url %}
+{% url 'mybase:sign_up' as sign_up_url %}
+{% url 'mybase:posting_guide' as posting_guide_url %}
+
+{% block title %}Make Topic{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <div class="col-lg-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Before You Create a Topic</h2>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li>Pick a short, clear topic name.</li>
+                    <li>Use the description to explain what belongs in the topic.</li>
+                    <li>Avoid making duplicate topics if a similar one already exists.</li>
+                    <li>Keep the scope focused so people know what to post there.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Need Help Posting?</h2>
+                <p class="text-muted small mb-3">
+                    We also added a quick guide explaining how posts should be written and previewed.
+                </p>
+                <a
+                    href="{% if posting_guide_url %}{{ posting_guide_url }}{% else %}/posting-guide/{% endif %}"
+                    class="btn btn-outline-primary btn-sm w-100"
+                >
+                    Read Posting Guide
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h1 class="h3 mb-2">Create a New Topic</h1>
+                    <p class="text-muted mb-0">
+                        Set up a new discussion area so other users can start posting in the right place.
+                    </p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+
+                        {% if topic_form %}
+                            {{ topic_form.non_field_errors }}
+                            {% for field in topic_form %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <p class="helptext mb-0">{{ field.help_text }}</p>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% elif form %}
+                            {{ form.non_field_errors }}
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <p class="helptext mb-0">{{ field.help_text }}</p>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="topicName" class="form-label">Topic Name</label>
+                                <input
+                                    type="text"
+                                    id="topicName"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="e.g. Film Recommendations"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="topicDescription" class="form-label">Description</label>
+                                <textarea
+                                    id="topicDescription"
+                                    name="description"
+                                    rows="5"
+                                    class="form-control"
+                                    placeholder="Explain what this topic is for and what people should post here."
+                                ></textarea>
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-lg"></i> Create Topic
+                            </button>
+                            <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning mb-3">
+                        You need to log in before creating a topic.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ login_url|default:'/login/' }}" class="btn btn-outline-primary">Log In</a>
+                        <a href="{{ sign_up_url|default:'/sign-up/' }}" class="btn btn-success">Sign Up</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

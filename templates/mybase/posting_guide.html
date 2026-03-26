@@ -1,0 +1,124 @@
+{% extends 'mybase/base.html' %}
+{% url 'mybase:home' as home_url %}
+{% url 'mybase:make_topic' as make_topic_url %}
+
+{% block title %}Posting Guide{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <div class="col-lg-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Quick Outline</h2>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li>Choose the right topic first.</li>
+                    <li>Write your title before the body.</li>
+                    <li>Use raw Simples/XML in the editor.</li>
+                    <li>Preview before submitting.</li>
+                    <li>Stay respectful and relevant.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Related Pages</h2>
+                <div class="d-grid gap-2">
+                    <a href="{{ home_url|default:'/home/' }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a
+                        href="{% if make_topic_url %}{{ make_topic_url }}{% else %}/make-topic/{% endif %}"
+                        class="btn btn-outline-secondary btn-sm"
+                    >
+                        Make Topic
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="h3 mb-3">How to Make Posts</h1>
+                <p class="text-muted mb-0">
+                    This page explains the expected posting flow for the forum and how the Simples/XML editor is meant to be used.
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Recommended Workflow</h2>
+                <div class="guide-step-list">
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">1</span>
+                        <div>
+                            <h3 class="h6 mb-1">Pick the right topic</h3>
+                            <p class="text-muted mb-0">
+                                Make sure your post belongs in the correct discussion area before you start writing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">2</span>
+                        <div>
+                            <h3 class="h6 mb-1">Write the raw post content</h3>
+                            <p class="text-muted mb-0">
+                                Enter your content in the editor using the raw Simples/XML syntax when needed.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">3</span>
+                        <div>
+                            <h3 class="h6 mb-1">Preview the compiled output</h3>
+                            <p class="text-muted mb-0">
+                                Use the preview mode to check headings, paragraphs, and embedded content before submitting.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">4</span>
+                        <div>
+                            <h3 class="h6 mb-1">Submit when it looks right</h3>
+                            <p class="text-muted mb-0">
+                                If the preview looks correct and the post stays on topic, you can submit it.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Simple Example</h2>
+                <p class="text-muted">
+                    A post can still be plain text, but if you want structured output the raw source might look something like this:
+                </p>
+                <pre class="guide-code-block mb-0"><code>&lt;simples&gt;
+  &lt;header&gt;My first post&lt;/header&gt;
+  &lt;paragraph&gt;This is the main body of the post.&lt;/paragraph&gt;
+&lt;/simples&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Good Posting Tips</h2>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li>Use a clear title so people know what your post is about.</li>
+                    <li>Keep your post respectful and useful to the discussion.</li>
+                    <li>Only add images or embedded content when they support the post.</li>
+                    <li>Preview first if you are using Simples/XML formatting.</li>
+                    <li>Avoid duplicate posts if a similar thread already exists.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

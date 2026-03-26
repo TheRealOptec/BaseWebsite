@@ -3,6 +3,7 @@
 {% url 'mybase:home' as home_url %}
 {% url 'mybase:login' as login_url %}
 {% url 'mybase:sign_up' as sign_up_url %}
+{% url 'mybase:posting_guide' as posting_guide_url %}
 
 {% block title %}
     {% if topic %}Make Post - {{ topic.name }}{% else %}Make Post{% endif %}
@@ -50,12 +51,18 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h2 class="h6 mb-3">Posting Tips</h2>
-                <ul class="small text-muted mb-0 ps-3">
+                <ul class="small text-muted mb-3 ps-3">
                     <li>Use a clear and relevant title.</li>
                     <li>Keep your post respectful and on topic.</li>
                     <li>Add an image only if it supports your post.</li>
                     <li>Avoid duplicate posts.</li>
                 </ul>
+                <a
+                    href="{% if posting_guide_url %}{{ posting_guide_url }}{% else %}/posting-guide/{% endif %}"
+                    class="btn btn-outline-primary btn-sm w-100"
+                >
+                    Read full posting guide
+                </a>
             </div>
         </div>
     </div>
