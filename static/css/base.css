@@ -356,6 +356,44 @@ ul.errorlist {
     white-space: pre-line;
 }
 
+.guide-step-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.guide-step-card {
+    align-items: flex-start;
+    background: var(--site-surface-soft);
+    border: 1px solid var(--site-border);
+    border-radius: 1rem;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+}
+
+.guide-step-number {
+    align-items: center;
+    background: var(--site-primary);
+    border-radius: 999px;
+    color: #ffffff;
+    display: inline-flex;
+    font-size: 0.95rem;
+    font-weight: 700;
+    height: 2rem;
+    justify-content: center;
+    min-width: 2rem;
+}
+
+.guide-code-block {
+    background: #1f2937;
+    border-radius: 1rem;
+    color: #f8fafc;
+    font-size: 0.92rem;
+    margin: 0;
+    overflow-x: auto;
+    padding: 1rem 1.1rem;
+}
+
 @media (max-width: 991.98px) {
     .site-header {
         text-align: center;
