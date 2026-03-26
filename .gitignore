@@ -25,6 +25,8 @@ dist-ssr
 
 # Python
 *.pyc
+*.cpython-311
+*.cpython-311.pyc
 
 # uv
 *.toml
