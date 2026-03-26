@@ -79,5 +79,13 @@ def user_logout(request):
     logout(request)
     return redirect(reverse('mybase:home'))
 
+@login_required
+def edit_user_profile(request):
+    return render(request, 'mybase/edit_profile.html', context={})
+
+def view_profile(request, username_slug):
+    # TODO - db query here
+    return render(request, 'mybase/profile.html', context={})
+
 def api_handler(request):
     return ApiHandler.handleReq(request)

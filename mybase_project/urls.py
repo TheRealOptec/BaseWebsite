@@ -17,9 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from mybase import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mybase/', include('mybase.urls')),
+    path('sign-up/', views.sign_up, name='sign_up'),
     path('logout/', views.user_logout, name='user_logout'),
     path('login/', views.user_login, name='user_login'),
-]
+    path('edit-profile/', views.edit_user_profile, name='edit_user_profile'),
+    path('view-profile/<slug:username_slug>/', views.view_profile, name='view_profile'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
