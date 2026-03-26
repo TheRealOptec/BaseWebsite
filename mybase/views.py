@@ -90,8 +90,19 @@ def view_profile(request, username_slug):
     return render(request, 'mybase/profile.html', context={})
 
 def view_post(request, topic_slug, post_name_slug):
-    # TODO - db query here
-    return render(request, 'mybase/post_detail.html', context={})
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+    except:
+        # TODO - remove this
+        return HttpResponse("No such topic exist")
+    try:
+        post = Page.objects.get(topic=topic, slug=post_name_slug)
+    except:
+        # TODO - remove this
+        return HttpResponse("No such post exists")
+    return render(request, 'mybase/post_detail.html', context={
+        "post": post
+    })
 
 def view_topic(request, topic_slug):
     try:

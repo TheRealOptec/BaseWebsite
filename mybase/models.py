@@ -20,12 +20,13 @@ class Page(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     title = models.CharField(max_length=60)
     views = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
     slug = models.SlugField(unique=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Page, self).save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.title
     
