@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.urls import reverse
+from django.http import HttpResponse
 from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
@@ -52,7 +53,23 @@ def sign_up(request):
     })
 
 def user_login(request):
-    return render(request, 'mybase/login.html', context={})
+    print(f"I'm usering it: {request.method}")
+    if request.method == "POST":
+        print("Posting")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                return redirect(reverse("mybase:home"))
+            else:
+                return HttpResponse("Your account has been disabled")
+        else:
+            return HttpResponse("Invalid login details suplied")
+    return render(request, 'mybase/login.html', context={  })
 
 @login_required
 def user_logout(request):
