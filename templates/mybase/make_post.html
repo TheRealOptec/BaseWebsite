@@ -102,7 +102,7 @@
                             <div class="mb-4">
                                 <label class="form-label" for="{{ post_form.body.id_for_label }}">Post Content</label>
                                 <p class="helptext mb-3">
-                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output.
+                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output. Press Tab to insert indentation in the editor.
                                 </p>
 
                                 <div class="simples-mode-switch mb-3" data-simples-toggle>
@@ -153,7 +153,7 @@
                             <div class="mb-4">
                                 <label for="postBody" class="form-label">Post Content</label>
                                 <p class="helptext mb-3">
-                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output.
+                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output. Press Tab to insert indentation in the editor.
                                 </p>
 
                                 <div class="simples-mode-switch mb-3" data-simples-toggle>
@@ -254,6 +254,22 @@
             target.appendChild(paragraph);
         }
 
+        function insertTabIndentation(event) {
+            if (!bodyInput || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const start = bodyInput.selectionStart ?? 0;
+            const end = bodyInput.selectionEnd ?? 0;
+            const value = bodyInput.value;
+            const indentation = "\t";
+
+            bodyInput.value = `${value.slice(0, start)}${indentation}${value.slice(end)}`;
+            bodyInput.selectionStart = bodyInput.selectionEnd = start + indentation.length;
+        }
+
         function renderPreview() {
             if (!bodyInput || !previewOutput) {
                 return;
@@ -299,6 +315,7 @@
         }
 
         if (postForm && bodyInput) {
+            bodyInput.addEventListener("keydown", insertTabIndentation);
             editButton?.addEventListener("click", () => setMode("edit"));
             previewButton?.addEventListener("click", () => setMode("preview"));
         }
