@@ -9,6 +9,9 @@ from django.contrib.auth import authenticate,login,logout
 from mybase.models import Topic,Page,User,UserProfile
 
 from .apis.api_handler import ApiHandler
+from .searching.searching_handler import SearchingHandler
+from .searching.search_in_options import SearchIn
+from .searching.sort_by_options import SortBy
 
 def home(request):
     context_dict = {
@@ -17,8 +20,18 @@ def home(request):
     return render(request, 'mybase/home.html', context=context_dict)
 
 def search(request):
+    query = request.GET.get("q", None)
+    # If blank or not provided then redirect back to the home page
+    if query is None or query == "":
+        return redirect(reverse("mybase:home"))
+    # Get filtering options
+    searchIn = request.GET.get("searchIn", SearchIn.ALL())
+    sortBy = request.GET.get("sortBy", SortBy.MOST_LIKED)
+    (post_results, topic_results) = SearchingHandler.search(q=query, searchIn=searchIn, sortBy=sortBy)
     context_dict = {
-        "query": request.GET.get("q", None)
+        "query": query,
+        "post_results": post_results,
+        "topic_results": topic_results
     }
     return render(request, 'mybase/search.html', context=context_dict)
 
