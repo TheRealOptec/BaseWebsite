@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mybase.models import Topic, Page, UserProfile
+from mybase.models import Topic, Page, UserProfile #, Comment
 
 class TopicAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug':('name',)}
@@ -10,3 +10,4 @@ class PageAdmin(admin.ModelAdmin):
 admin.site.register(Topic, TopicAdmin)
 admin.site.register(Page, PageAdmin)
 admin.site.register(UserProfile)
+#admin.site.register(Comment)
