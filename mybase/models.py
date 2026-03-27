@@ -50,7 +50,7 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     pfp = models.ImageField(upload_to='profile_image', blank=True)
-    bio = models.CharField(max_length=500)
+    bio = models.CharField(max_length=500, default="")
     slug = models.SlugField(unique=True)
 
     def save(self, *args, **kwargs):

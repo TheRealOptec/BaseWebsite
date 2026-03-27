@@ -29,8 +29,8 @@ dist-ssr
 *.cpython-311.pyc
 
 # Venvs
-.venv
-venv
+.venv/
+venv/
 
 # uv
 *.toml
