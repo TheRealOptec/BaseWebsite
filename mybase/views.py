@@ -123,8 +123,16 @@ def edit_user_profile(request):
     return render(request, 'mybase/edit_profile.html', context={})
 
 def view_profile(request, username_slug):
-    # TODO - db query here
-    return render(request, 'mybase/profile.html', context={})
+    try:
+        user_profile = UserProfile.objects.get(slug=username_slug)
+        user = user_profile.user
+    except:
+        user_profile = None
+        user = None
+    return render(request, 'mybase/profile.html', context={
+        "profile": user_profile,
+        "profile_user": user
+    })
 
 def view_post(request, topic_slug, post_name_slug):
     # Get this topic and post

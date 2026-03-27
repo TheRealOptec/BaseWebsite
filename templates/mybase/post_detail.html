@@ -236,7 +236,7 @@
                 <h2 class="h5 mb-3">Add Comment</h2>
 
                 {% if user.is_authenticated %}
-                    <form method="post" action="">
+                    <form method="post">
                         {% csrf_token %}
 
                         {% if comment_form %}

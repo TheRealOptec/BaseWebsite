@@ -28,6 +28,10 @@ dist-ssr
 *.cpython-311
 *.cpython-311.pyc
 
+# Venvs
+.venv
+venv
+
 # uv
 *.toml
 uv.lock
