@@ -6,9 +6,12 @@ from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
-from mybase.models import Topic,Page
+from mybase.models import Topic,Page,User,UserProfile,Comment
 
 from .apis.api_handler import ApiHandler
+from .searching.searching_handler import SearchingHandler
+from .searching.search_in_options import SearchIn
+from .searching.sort_by_options import SortBy
 
 def home(request):
     context_dict = {
@@ -17,8 +20,18 @@ def home(request):
     return render(request, 'mybase/home.html', context=context_dict)
 
 def search(request):
+    query = request.GET.get("q", None)
+    # If blank or not provided then redirect back to the home page
+    if query is None or query == "":
+        return redirect(reverse("mybase:home"))
+    # Get filtering options
+    searchIn = SearchIn.fromStr(request.GET.get("search_in", "all"))
+    sortBy = SortBy.fromStr(request.GET.get("sort_by", "most_liked"))
+    (post_results, topic_results) = SearchingHandler.search(q=query, searchIn=searchIn, sortBy=sortBy)
     context_dict = {
-        "query": request.GET.get("q", None)
+        "query": query,
+        "post_results": post_results,
+        "topic_results": topic_results
     }
     return render(request, 'mybase/search.html', context=context_dict)
 
@@ -53,6 +66,30 @@ def sign_up(request):
         "user_form": user_form,
         "profile_form": profile_form
     })
+
+def sign_up_v2(request):
+    if request.method == "POST":
+        username = request.POST.get("username", None)
+        email = request.POST.get("email", None)
+        password1 = request.POST.get("password1", None)
+        password2 = request.POST.get("password2", None)
+        # Check data validity
+        if (password1 is None or password2 is None or email is None or username is None):
+            print("A field is invalid on sign_up_v2")
+            return render(request, "mybase/sign_up.html", context={})
+        # Check if the password has been confirmed properly
+        if (password1 != password2):
+            # TODO - try and do this dynamically if possible, I believe we could use Ajax for this
+            return HttpResponse("Did not confirm password")
+        # Sign in and render new home page
+        user = User(username=username, email=email, password=password1)
+        user.save()
+        userProfile = UserProfile(user=user)
+        userProfile.save()
+        login(request, user)
+        return redirect(reverse("mybase:home"))
+        
+    return render(request, "mybase/sign_up.html", context={})
 
 def user_login(request):
     invalid_details = False
@@ -100,8 +137,13 @@ def view_post(request, topic_slug, post_name_slug):
     except:
         # TODO - remove this
         return HttpResponse("No such post exists")
+    try:
+        comments = Comment.objects.filter(post=post).values()
+    except:
+        comments = None
     return render(request, 'mybase/post_detail.html', context={
-        "post": post
+        "post": post,
+        "comments": comments
     })
 
 def view_topic(request, topic_slug):
@@ -109,8 +151,10 @@ def view_topic(request, topic_slug):
         topic = Topic.objects.get(slug=topic_slug)
     except:
         topic = None
+    posts = Page.objects.filter(topic=topic).values()
     return render(request, 'mybase/topic.html', context={
-        "topic": topic
+        "topic": topic,
+        "posts": posts
     })
 
 @login_required
@@ -138,7 +182,8 @@ def make_post(request, topic_slug):
             return redirect(reverse('mybase:home'))
         post = Page(
             topic=topic,
-            title=request.POST.get('title', None)
+            title=request.POST.get('title', None),
+            body=request.POST.get('body', "")
         )
         post.save()
         return render(request, 'mybase/make_post.html', context={

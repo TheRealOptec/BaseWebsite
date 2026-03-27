@@ -14,9 +14,22 @@
                 <ul class="small text-muted mb-0 ps-3">
                     <li>Choose the right topic first.</li>
                     <li>Write your title before the body.</li>
-                    <li>Use raw Simples/XML in the editor.</li>
+                    <li>Wrap structured content in <code>&lt;simples&gt;</code>.</li>
                     <li>Preview before submitting.</li>
                     <li>Stay respectful and relevant.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3">Supported Tags</h2>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li><code>&lt;h&gt;</code> for a top-level heading</li>
+                    <li><code>&lt;p&gt;</code> for paragraphs</li>
+                    <li><code>&lt;embed&gt;</code> for API-driven content</li>
+                    <li><code>&lt;news&gt;</code> inside <code>&lt;embed&gt;</code></li>
+                    <li><code>&lt;q&gt;</code>, <code>&lt;from&gt;</code>, <code>&lt;language&gt;</code>, <code>&lt;sortBy&gt;</code>, <code>&lt;top&gt;</code> inside <code>&lt;news&gt;</code></li>
                 </ul>
             </div>
         </div>
@@ -42,7 +55,7 @@
             <div class="card-body">
                 <h1 class="h3 mb-3">How to Make Posts</h1>
                 <p class="text-muted mb-0">
-                    This page explains the expected posting flow for the forum and how the Simples/XML editor is meant to be used.
+                    This page explains the posting flow for the forum and the exact Simples/XML syntax currently supported by the editor and compiler.
                 </p>
             </div>
         </div>
@@ -96,14 +109,116 @@
 
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <h2 class="h5 mb-3">Simple Example</h2>
+                <h2 class="h5 mb-3">Syntax Rules</h2>
+                <div class="guide-step-list">
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">A</span>
+                        <div>
+                            <h3 class="h6 mb-1">Use real Simples tags</h3>
+                            <p class="text-muted mb-0">
+                                The compiler currently supports <code>&lt;h&gt;</code> and <code>&lt;p&gt;</code> for text structure. If you use other tag names, they may not render.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">B</span>
+                        <div>
+                            <h3 class="h6 mb-1">Wrap structured content in <code>&lt;simples&gt;</code></h3>
+                            <p class="text-muted mb-0">
+                                A structured post should use a single <code>&lt;simples&gt;</code> root element, with your headings, paragraphs, and embeds nested inside it.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">C</span>
+                        <div>
+                            <h3 class="h6 mb-1">Keep the XML valid</h3>
+                            <p class="text-muted mb-0">
+                                Open and close each tag properly, and make sure nested elements are placed inside the correct parent tag.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guide-step-card">
+                        <span class="guide-step-number">D</span>
+                        <div>
+                            <h3 class="h6 mb-1">Use <code>&lt;embed&gt;</code> only where text content can appear</h3>
+                            <p class="text-muted mb-0">
+                                The embed container does not display text by itself. It should be placed in a normal content flow, not nested inside another <code>&lt;embed&gt;</code>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Basic Simples Example</h2>
                 <p class="text-muted">
-                    A post can still be plain text, but if you want structured output the raw source might look something like this:
+                    A post can still be plain text, but if you want structured output the raw source should look more like this:
                 </p>
                 <pre class="guide-code-block mb-0"><code>&lt;simples&gt;
-  &lt;header&gt;My first post&lt;/header&gt;
-  &lt;paragraph&gt;This is the main body of the post.&lt;/paragraph&gt;
+  &lt;h&gt;My first post&lt;/h&gt;
+  &lt;p&gt;This is the main body of the post.&lt;/p&gt;
+  &lt;p&gt;You can add more than one paragraph if needed.&lt;/p&gt;
 &lt;/simples&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">News Embed Example</h2>
+                <p class="text-muted">
+                    The current documentation and compiler support a <code>&lt;news&gt;</code> embed inside <code>&lt;embed&gt;</code>. The request details are provided through the child tags below.
+                </p>
+                <pre class="guide-code-block mb-3"><code>&lt;simples&gt;
+  &lt;h&gt;Latest AI News&lt;/h&gt;
+  &lt;p&gt;Here are some matching headlines:&lt;/p&gt;
+  &lt;embed&gt;
+    &lt;news&gt;
+      &lt;q&gt;artificial intelligence&lt;/q&gt;
+      &lt;from&gt;2026-03-10&lt;/from&gt;
+      &lt;language&gt;en&lt;/language&gt;
+      &lt;sortBy&gt;publishedAt&lt;/sortBy&gt;
+      &lt;top&gt;3&lt;/top&gt;
+    &lt;/news&gt;
+  &lt;/embed&gt;
+&lt;/simples&gt;</code></pre>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tag</th>
+                                <th scope="col">What it does</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>&lt;q&gt;</code></td>
+                                <td class="text-muted">Sets the news search query.</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;from&gt;</code></td>
+                                <td class="text-muted">Sets the earliest date for returned articles. Use <code>yyyy-mm-dd</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;language&gt;</code></td>
+                                <td class="text-muted">Sets the article language, commonly <code>en</code> for English.</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;sortBy&gt;</code></td>
+                                <td class="text-muted">Sets the sorting option passed to the news request.</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;top&gt;</code></td>
+                                <td class="text-muted">Limits how many articles are displayed.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -113,8 +228,10 @@
                 <ul class="small text-muted mb-0 ps-3">
                     <li>Use a clear title so people know what your post is about.</li>
                     <li>Keep your post respectful and useful to the discussion.</li>
-                    <li>Only add images or embedded content when they support the post.</li>
+                    <li>Only add embedded content when it genuinely supports the post.</li>
                     <li>Preview first if you are using Simples/XML formatting.</li>
+                    <li>Double-check your closing tags if the preview does not look right.</li>
+                    <li>Keep API examples concise so topic pages stay readable.</li>
                     <li>Avoid duplicate posts if a similar thread already exists.</li>
                 </ul>
             </div>
