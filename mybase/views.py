@@ -127,6 +127,7 @@ def view_profile(request, username_slug):
     return render(request, 'mybase/profile.html', context={})
 
 def view_post(request, topic_slug, post_name_slug):
+    # Get this topic and post
     try:
         topic = Topic.objects.get(slug=topic_slug)
     except:
@@ -137,6 +138,11 @@ def view_post(request, topic_slug, post_name_slug):
     except:
         # TODO - remove this
         return HttpResponse("No such post exists")
+    # If comment is being added then add comment
+    if request.method == "POST":
+        # Got help from: https://forum.djangoproject.com/t/how-to-get-current-user/10234/5
+        comment = Comment(author=request.user, post=post, body=request.POST.get("body", ""))
+        comment.save()
     try:
         comments = Comment.objects.filter(post=post).values()
     except:
