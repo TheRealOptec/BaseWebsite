@@ -25,8 +25,8 @@ def search(request):
     if query is None or query == "":
         return redirect(reverse("mybase:home"))
     # Get filtering options
-    searchIn = request.GET.get("searchIn", SearchIn.ALL())
-    sortBy = request.GET.get("sortBy", SortBy.MOST_LIKED)
+    searchIn = SearchIn.fromStr(request.GET.get("search_in", "all"))
+    sortBy = SortBy.fromStr(request.GET.get("sort_by", "most_liked"))
     (post_results, topic_results) = SearchingHandler.search(q=query, searchIn=searchIn, sortBy=sortBy)
     context_dict = {
         "query": query,

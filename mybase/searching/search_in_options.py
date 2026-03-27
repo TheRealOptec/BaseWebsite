@@ -9,5 +9,13 @@ class SearchIn:
 
     def getVal(val, ix):
         return val & (1 << ix)
+    
+    def fromStr(s):
+        strMatching = {
+            "all": SearchIn.ALL(),
+            "posts": SearchIn.POSTS(),
+            "topics": SearchIn.TOPICS()
+        }
+        return strMatching.get(s, None)
 
 
