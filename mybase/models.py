@@ -10,8 +10,11 @@ class Topic(models.Model):
     likes = models.IntegerField(default=0)
     slug = models.SlugField(unique=True)
 
+    created_at = models.DateTimeField()
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+        self.created_at = timezone.now()
         super(Topic, self).save(*args, **kwargs)
 
     def __str__(self):
