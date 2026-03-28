@@ -6,7 +6,7 @@ from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
-from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike
+from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike,TopicHistory,PostHistory
 
 from .apis.api_handler import ApiHandler
 from .searching.searching_handler import SearchingHandler
@@ -204,11 +204,14 @@ def view_topic(request, topic_slug):
         # Add a view
         topic.views += 1
         topic.save()
-        # Get posts as set
+        # Add topic history to user (if valid)
+        if request.user.is_authenticated:
+            topic_history = TopicHistory(topic=topic, user=request.user)
+            topic_history.save()
+        # Get posts as list
         posts = list(Page.objects.filter(topic=topic).values())
 
         # Get likes
-        post_likes = []
         if request.user.is_authenticated:
             # Set whether or not the user has liked the post
             for post in posts:
