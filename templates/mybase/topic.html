@@ -254,6 +254,30 @@
                                         </div>
 
                                         <div class="d-flex flex-wrap gap-2">
+                                            {% if user.is_authenticated %}
+                                                {% url 'mybase:like_post' topic.slug post.slug as post_like_url %}
+                                                <form
+                                                    method="post"
+                                                    action="{% if post_like_url %}{{ post_like_url }}{% else %}/mybase/topic/{{ topic.slug }}/post/{{ post.slug }}/like/{% endif %}"
+                                                    class="d-inline"
+                                                >
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-outline-primary btn-sm"
+                                                    >
+                                                        {% if post.user_has_liked %}Unlike Post{% else %}Like Post{% endif %}
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <a
+                                                    href="{{ login_url|default:'/login/' }}?next={{ request.get_full_path|urlencode }}"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                >
+                                                    Log in to like
+                                                </a>
+                                            {% endif %}
                                             <a
                                                 href="{% if post_detail_url %}{{ post_detail_url }}{% else %}/mybase/topic/{{ topic.slug }}/post/{{ post.slug }}{% endif %}"
                                                 class="btn btn-outline-primary btn-sm"

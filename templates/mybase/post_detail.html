@@ -149,6 +149,27 @@
                             <span class="badge bg-dark">
                                 Views: {{ post.views|default:0 }}
                             </span>
+                            {% if user.is_authenticated %}
+                                {% url 'mybase:like_post' post.topic.slug post.slug as like_post_url %}
+                                <form
+                                    method="post"
+                                    action="{% if like_post_url %}{{ like_post_url }}{% else %}/mybase/topic/{{ post.topic.slug }}/post/{{ post.slug }}/like/{% endif %}"
+                                    class="d-inline"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        {% if post.user_has_liked %}Unlike Post{% else %}Like Post{% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <a
+                                    href="{{ login_url|default:'/login/' }}?next={{ request.get_full_path|urlencode }}"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    Log in to like
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
 

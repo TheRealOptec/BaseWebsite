@@ -47,6 +47,17 @@ class Comment(models.Model):
     def __str__(self):
         return self.body
 
+class PostLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_likes')
+    post = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='post_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.post.title}"
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     pfp = models.ImageField(upload_to='profile_image', blank=True)
