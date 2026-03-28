@@ -47,11 +47,16 @@ def home(request):
     else:
         recent_topics = []
         recent_posts = []
+    # Get most viewed and most liked topics
+    most_viewed_topic = Topic.objects.order_by("-likes")[0]
+    most_liked_topic = Topic.objects.order_by("-views")[0]
     # Render home page
     context_dict = {
         "static_css_path": settings.STATIC_CSS_URL,
         "recent_topics": recent_topics,
-        "recent_posts": recent_posts
+        "recent_posts": recent_posts,
+        "most_viewed_topic": most_viewed_topic,
+        "most_liked_topic": most_liked_topic
     }
     return render(request, 'mybase/home.html', context=context_dict)
 
@@ -355,12 +360,12 @@ def toggle_like_post(request, topic_slug, post_slug):
                 return HttpResponse("Invalid post")
             # Toggle the likes - (could use get_or_create here to simplify logic)
             try:
-                pl = PostLike.objects.get(user=request.user, post=post)
+                pl = PostLike.objects.get(user=request.user, post=post, topic=topic)
                 # If liked vvv
                 pl.delete() # Please don't explode things
             except:
                 # If not liked vvv
-                pl = PostLike(user=request.user, post=post)
+                pl = PostLike(user=request.user, post=post, topic=topic)
                 pl.save()
             # TODO - also change this to a reverse
             return redirect(f"/mybase/topic/{topic.slug}/")

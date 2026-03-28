@@ -94,6 +94,7 @@ class Comment(models.Model):
 class PostLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_likes')
     post = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='post_likes')
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='topics_likes')
 
     class Meta:
         unique_together = ('user', 'post')
@@ -101,12 +102,16 @@ class PostLike(models.Model):
     def save(self, *args, **kwargs):
         self.post.likes += 1
         self.post.save()
+        self.topic.likes += 1
+        self.topic.save()
         super(PostLike, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         self.post.likes -= 1
         self.post.save()
+        self.topic.likes += 1
+        self.topic.save()
         super(PostLike, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} likes {self.post.title}"
+        return f"{self.user.username} likes {self.post.title} on topic {self.topic.name}"
