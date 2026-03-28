@@ -195,28 +195,33 @@ def like_post(request, topic_slug, post_name_slug):
     return redirect(reverse("mybase:view_post", args=[topic_slug, post_name_slug]))
 
 def view_topic(request, topic_slug):
+    # Attempt to get the topic from the slug
     try:
         topic = Topic.objects.get(slug=topic_slug)
-        posts = Page.objects.filter(topic=topic).values()
     except:
         topic = None
-        posts = None
+    # If a topic was found
     if topic is not None:
+        # Add a view
         topic.views += 1
         topic.save()
+        # Get posts
+        posts = Page.objects.filter(topic=topic).values()
 
-    #posts = Page.objects.filter(topic=topic).annotate(comment_count=Count('comment'))
-    liked_post_ids = set()
-    if request.user.is_authenticated:
-        liked_post_ids = set(
-            PostLike.objects.filter(user=request.user, post__in=posts).values_list('post_id', flat=True)
-        )
-    for post in posts:
-        post.user_has_liked = post.id in liked_post_ids
-    return render(request, 'mybase/topic.html', context={
-        "topic": topic,
-        "posts": posts
-    })
+        # Get likes
+        liked_post_ids = set()
+        if request.user.is_authenticated:
+            liked_post_ids = set(
+                PostLike.objects.filter(user=request.user, post__in=posts).values_list('post_id', flat=True)
+            )
+        for post in posts:
+            post.user_has_liked = post.id in liked_post_ids
+        return render(request, 'mybase/topic.html', context={
+            "topic": topic,
+            "posts": posts
+        })
+    # TODO - change this
+    return HttpResponse("Invalid topic")
 
 @login_required
 def make_topic(request):
