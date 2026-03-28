@@ -212,10 +212,8 @@ def view_topic(request, topic_slug):
         if request.user.is_authenticated:
             post_likes = list(PostLike.objects.filter(user=request.user).values())
         # Set whether or not the user has liked the post
-        for pl in post_likes:
-            # Probably won't work rn
-            if pl["post_id"] in posts:
-                pl["post"]["user_has_liked"] = True
+        for post in posts:
+            post["user_has_liked"] = PostLike.objects.filter(user=request.user, post=post["id"]).exists()
         return render(request, 'mybase/topic.html', context={
             "topic": topic,
             "posts": posts

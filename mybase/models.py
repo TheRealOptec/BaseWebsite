@@ -77,8 +77,8 @@ class Comment(models.Model):
         return self.body
 
 class PostLike(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='post_likes')
-    post = models.OneToOneField(Page, on_delete=models.CASCADE, related_name='post_likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_likes')
+    post = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='post_likes')
 
     class Meta:
         unique_together = ('user', 'post')
