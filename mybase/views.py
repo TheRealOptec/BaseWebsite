@@ -187,11 +187,11 @@ def edit_user_profile(request):
         "profile": profile
     })
 
-def view_profile(request, username_slug):
+def view_profile(request, username):
     try:
-        user_profile = UserProfile.objects.get(slug=username_slug)
-        user = user_profile.user
-    except:
+        user = User.objects.get(username=username)
+        user_profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist | User.DoesNotExist:
         user_profile = None
         user = None
     return render(request, 'mybase/profile.html', context={
