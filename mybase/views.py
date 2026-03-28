@@ -17,8 +17,14 @@ def redirect_home(request):
     return redirect(reverse("mybase:home"))
 
 def home(request):
+    # Get recent topics and posts
+    recent_topics = [x.topic for x in TopicHistory.objects.order_by("-access_time")]
+    recent_posts = [x.post for x in PostHistory.objects.order_by("-access_time")]
+    # Render home page
     context_dict = {
-        "static_css_path": settings.STATIC_CSS_URL
+        "static_css_path": settings.STATIC_CSS_URL,
+        "recent_topics": recent_topics,
+        "recent_posts": recent_posts
     }
     return render(request, 'mybase/home.html', context=context_dict)
 

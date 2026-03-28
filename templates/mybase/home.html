@@ -42,9 +42,9 @@
                     <h2 class="h5 mb-0">Recent Topics</h2>
                 </div>
 
-                {% if topics %}
+                {% if recent_topics %}
                     <div class="list-group">
-                        {% for topic in topics %}
+                        {% for topic in recent_topics %}
                             {% url 'mybase:view_topic' topic.slug as topic_detail_url %}
                             <a
                                 href="{% if topic_detail_url %}{{ topic_detail_url }}{% else %}/mybase/topic/{{ topic.slug }}/{% endif %}"
