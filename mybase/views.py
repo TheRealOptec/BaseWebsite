@@ -41,8 +41,12 @@ def redirect_home(request):
 
 def home(request):
     # Get recent topics and posts
-    recent_topics = [x.topic for x in TopicHistory.objects.order_by("-access_time")]
-    recent_posts = [x.post for x in PostHistory.objects.order_by("-access_time")]
+    if request.user.is_authenticated:
+        recent_topics = [x.topic for x in TopicHistory.objects.filter(user=request.user).order_by("-access_time")]
+        recent_posts = [x.post for x in PostHistory.objects.filter(user=request.user).order_by("-access_time")]
+    else:
+        recent_topics = []
+        recent_posts = []
     # Render home page
     context_dict = {
         "static_css_path": settings.STATIC_CSS_URL,
