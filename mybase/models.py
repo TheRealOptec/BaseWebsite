@@ -20,8 +20,8 @@ class Topic(models.Model):
 
 
 class Page(models.Model):
-    author = models.OneToOneField(User, on_delete=models.CASCADE)
-    topic = models.OneToOneField(Topic, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     title = models.CharField(max_length=60)
     body = models.CharField(max_length=500, default="")
     views = models.IntegerField(default=0)

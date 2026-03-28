@@ -289,19 +289,14 @@ def make_post(request, topic_slug):
     if request.method == "POST":
         post_form = PostForm(request.POST)
         if post_form.is_valid():
-            if Page.objects.filter(topic=topic).exists():
-                post_form.add_error(None, "This topic already has a post and cannot accept another one right now.")
-            elif Page.objects.filter(author=request.user).exists():
-                post_form.add_error(None, "Your account already has a post and cannot create another one right now.")
-            else:
-                post = Page(
-                    topic=topic,
-                    author=request.user,
-                    title=post_form.cleaned_data['title'],
-                    body=post_form.cleaned_data['body'],
-                )
-                post.save()
-                return redirect(reverse('mybase:view_post', args=[topic.slug, post.slug]))
+            post = Page(
+                topic=topic,
+                author=request.user,
+                title=post_form.cleaned_data['title'],
+                body=post_form.cleaned_data['body'],
+            )
+            post.save()
+            return redirect(reverse('mybase:view_post', args=[topic.slug, post.slug]))
     else:
         post_form = PostForm()
 
