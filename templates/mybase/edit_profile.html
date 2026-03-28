@@ -20,7 +20,7 @@
                 </div>
 
                 {% if user.is_authenticated %}
-                    <form method="post" action="" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         {% if user_form %}
@@ -136,7 +136,7 @@
                                                     rows="5"
                                                     class="form-control"
                                                     placeholder="Write something about yourself..."
-                                                ></textarea>
+                                                >{{ profile.bio }}</textarea>
                                             </div>
                                         {% endif %}
                                     </div>

@@ -27,5 +27,6 @@ urlpatterns = [
     path('logout/', views.user_logout, name='user_logout'),
     path('login/', views.user_login, name='user_login'),
     path('edit-profile/', views.edit_user_profile, name='edit_user_profile'),
-    path('view-profile/<slug:username_slug>/', views.view_profile, name='view_profile'),
+    # Got the url matching from: https://stackoverflow.com/questions/11894916/django-url-pattern-string-parameter
+    path('view-profile/<str:username>/', views.view_profile, name='view_profile'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

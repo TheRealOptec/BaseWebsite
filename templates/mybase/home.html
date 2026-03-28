@@ -121,7 +121,7 @@
                 {% if most_liked_topic %}
                     <h3 class="h5">{{ most_liked_topic.name }}</h3>
                     <p class="text-muted mb-0">
-                        {{ most_liked_topic.total_likes|default:0 }} likes
+                        {{ most_liked_topic.likes|default:0 }} likes
                     </p>
                 {% else %}
                     <p class="text-muted mb-0">No data available.</p>
@@ -136,7 +136,7 @@
                 {% if most_viewed_topic %}
                     <h3 class="h5">{{ most_viewed_topic.name }}</h3>
                     <p class="text-muted mb-0">
-                        {{ most_viewed_topic.total_views|default:0 }} views
+                        {{ most_viewed_topic.views|default:0 }} views
                     </p>
                 {% else %}
                     <p class="text-muted mb-0">No data available.</p>
