@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponse
+from django.db.models import Count
 from mybase.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
-from mybase.models import Topic,Page,User,UserProfile,Comment
+from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike
 
 from .apis.api_handler import ApiHandler
 from .searching.searching_handler import SearchingHandler
@@ -161,10 +162,37 @@ def view_post(request, topic_slug, post_name_slug):
         comments = Comment.objects.filter(post=post).values()
     except:
         comments = None
+    post.user_has_liked = False
+    if request.user.is_authenticated:
+        post.user_has_liked = PostLike.objects.filter(user=request.user, post=post).exists()
     return render(request, 'mybase/post_detail.html', context={
         "post": post,
         "comments": comments
     })
+
+@login_required(login_url='/login/')
+def like_post(request, topic_slug, post_name_slug):
+    if request.method != "POST":
+        return redirect(reverse("mybase:view_topic", args=[topic_slug]))
+
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+        post = Page.objects.get(topic=topic, slug=post_name_slug)
+        existing_like = PostLike.objects.filter(user=request.user, post=post).first()
+        if existing_like:
+            existing_like.delete()
+        else:
+            PostLike.objects.create(user=request.user, post=post)
+        post.likes = PostLike.objects.filter(post=post).count()
+        post.save(update_fields=['likes'])
+    except:
+        return redirect(reverse("mybase:home"))
+
+    next_url = request.POST.get("next", "")
+    if next_url.startswith('/'):
+        return redirect(next_url)
+
+    return redirect(reverse("mybase:view_post", args=[topic_slug, post_name_slug]))
 
 def view_topic(request, topic_slug):
     try:
@@ -176,6 +204,15 @@ def view_topic(request, topic_slug):
     if topic is not None:
         topic.views += 1
         topic.save()
+
+    #posts = Page.objects.filter(topic=topic).annotate(comment_count=Count('comment'))
+    liked_post_ids = set()
+    if request.user.is_authenticated:
+        liked_post_ids = set(
+            PostLike.objects.filter(user=request.user, post__in=posts).values_list('post_id', flat=True)
+        )
+    for post in posts:
+        post.user_has_liked = post.id in liked_post_ids
     return render(request, 'mybase/topic.html', context={
         "topic": topic,
         "posts": posts
