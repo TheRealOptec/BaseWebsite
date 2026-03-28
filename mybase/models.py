@@ -1,8 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
-
-import datetime
+from django.utils import timezone
 
 class Topic(models.Model):
     name = models.CharField(max_length=60, unique=True)
@@ -32,7 +31,7 @@ class Page(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-        self.created_at = datetime.datetime.now()
+        self.created_at = timezone.now()
         super(Page, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -58,7 +57,7 @@ class PostHistory(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        self.access_time = datetime.datetime.now()
+        self.access_time = timezone.now()
         super(PostHistory, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -71,7 +70,7 @@ class TopicHistory(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        self.access_time = datetime.datetime.now()
+        self.access_time = timezone.now()
         super(TopicHistory, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -85,7 +84,7 @@ class Comment(models.Model):
 
     def save(self, *args, **kwargs):
         # Got datetime stuff from: https://stackoverflow.com/questions/415511/how-do-i-get-the-current-time-in-python
-        self.created_at = datetime.datetime.now()
+        self.created_at = timezone.now()
         super(Comment, self).save(*args, **kwargs)
 
     def __str__(self):
