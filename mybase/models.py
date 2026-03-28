@@ -28,22 +28,15 @@ class Page(models.Model):
     likes = models.IntegerField(default=0)
     slug = models.SlugField(unique=False)
 
+    created_at = models.DateTimeField()
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
+        self.created_at = datetime.datetime.now()
         super(Page, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
-    
-
-class PostHistory(models.Model):
-    post = models.OneToOneField(Page, on_delete=models.CASCADE)
-    access_time = models.DateTimeField()
-
-
-class TopicHistory(models.Model):
-    topic = models.OneToOneField(Topic, on_delete=models.CASCADE)
-    access_time = models.DateTimeField()
 
 
 class UserProfile(models.Model):
@@ -52,15 +45,37 @@ class UserProfile(models.Model):
     bio = models.CharField(max_length=500, default="")
     slug = models.SlugField(unique=True)
 
-    topic_history = models.ForeignKey(TopicHistory, null=True, on_delete=models.SET_NULL)
-    post_history = models.ForeignKey(PostHistory, null=True, on_delete=models.SET_NULL)
-
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user.username)
         super(UserProfile, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username
+    
+class PostHistory(models.Model):
+    post = models.ForeignKey(Page, on_delete=models.CASCADE)
+    access_time = models.DateTimeField()
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.access_time = datetime.datetime.now()
+        super(PostHistory, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user} History: {self.post} - accessed on {self.access_time}"
+
+
+class TopicHistory(models.Model):
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    access_time = models.DateTimeField()
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.access_time = datetime.datetime.now()
+        super(TopicHistory, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user} History: {self.topic} - accessed on {self.access_time}"
     
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)

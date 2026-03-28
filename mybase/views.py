@@ -6,7 +6,7 @@ from mybase.forms import PostForm, UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 
-from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike
+from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike,TopicHistory,PostHistory
 
 from .apis.api_handler import ApiHandler
 from .searching.searching_handler import SearchingHandler
@@ -40,8 +40,14 @@ def redirect_home(request):
     return redirect(reverse("mybase:home"))
 
 def home(request):
+    # Get recent topics and posts
+    recent_topics = [x.topic for x in TopicHistory.objects.order_by("-access_time")]
+    recent_posts = [x.post for x in PostHistory.objects.order_by("-access_time")]
+    # Render home page
     context_dict = {
-        "static_css_path": settings.STATIC_CSS_URL
+        "static_css_path": settings.STATIC_CSS_URL,
+        "recent_topics": recent_topics,
+        "recent_posts": recent_posts
     }
     return render(request, 'mybase/home.html', context=context_dict)
 
@@ -175,6 +181,10 @@ def view_post(request, topic_slug, post_name_slug):
     # Increase view counts
     post.views += 1
     post.save()
+    # Add post history (if valid)
+    if request.user.is_authenticated:
+        post_history = PostHistory(user=request.user, post=post)
+        post_history.save()
     # If comment is being added then add comment
     if request.method == "POST":
         # Got help from: https://forum.djangoproject.com/t/how-to-get-current-user/10234/5
@@ -227,11 +237,14 @@ def view_topic(request, topic_slug):
         # Add a view
         topic.views += 1
         topic.save()
-        # Get posts as set
+        # Add topic history to user (if valid)
+        if request.user.is_authenticated:
+            topic_history = TopicHistory(topic=topic, user=request.user)
+            topic_history.save()
+        # Get posts as list
         posts = list(Page.objects.filter(topic=topic).values())
 
         # Get likes
-        post_likes = []
         if request.user.is_authenticated:
             # Set whether or not the user has liked the post
             for post in posts:
