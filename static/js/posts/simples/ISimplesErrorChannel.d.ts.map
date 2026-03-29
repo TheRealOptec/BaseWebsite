@@ -1,1 +1,1 @@
-{"version":3,"file":"ISimplesErrorChannel.d.ts","sourceRoot":"","sources":["../../../ts/src/posts/simples/ISimplesErrorChannel.ts"],"names":[],"mappings":"AACA,MAAM,WAAW,oBAAoB;IACjC,WAAW,CAAC,GAAG,EAAE,MAAM,GAAG,IAAI,CAAC;CAClC"}
+{"version":3,"file":"ISimplesErrorChannel.d.ts","sourceRoot":"","sources":["../../../ts/src/posts/simples/ISimplesErrorChannel.ts"],"names":[],"mappings":"AACA,MAAM,WAAW,oBAAoB;IACjC,WAAW,CAAC,GAAG,EAAE,MAAM,GAAG,IAAI,CAAC;IAC/B,WAAW,IAAI,IAAI,CAAC;CACvB"}

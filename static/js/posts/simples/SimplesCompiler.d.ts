@@ -1,3 +1,4 @@
+import type { ISimplesErrorChannel } from './ISimplesErrorChannel.js';
 import type { ISimplesNode } from './ISimplesNode.js';
 export declare class SimplesCompiler {
     private static compilerNodes;
@@ -13,5 +14,6 @@ export declare class SimplesCompiler {
     static compileNodeChildren(fragHead: Node, node: Node): void;
     private static interpretNode;
     static reportError(msg: string): void;
+    static setStdError(errorChannel: ISimplesErrorChannel): void;
 }
 //# sourceMappingURL=SimplesCompiler.d.ts.map

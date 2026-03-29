@@ -347,6 +347,7 @@
     <!-- New Stuff -->
     <script type="module">
         import { integrateSimples } from "{% static 'js/posts/integration/CallableSimplesIntegration.js' %}";
+        import { ErrorPanelChannel } from "{% static 'js/posts/simples/error_handling/ErrorPanelChannel.js' %}";
 
         const postForm = document.querySelector("[data-simples-form]");
         const bodyInput = postForm?.querySelector("textarea[name='body']");
@@ -357,6 +358,8 @@
         const errorList = postForm?.querySelector("[data-simples-error-list]");
         const editButton = postForm?.querySelector("[data-simples-mode='edit']");
         const previewButton = postForm?.querySelector("[data-simples-mode='preview']");
+
+        const simplesStdErrChannel = new ErrorPanelChannel(errorList, errorPanel);
 
         function insertTabIndentation(event) {
             if (!bodyInput || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) {
@@ -385,7 +388,7 @@
                 return;
             }
             // Compile and render the simples code
-            integrateSimples(true);
+            integrateSimples(true, simplesStdErrChannel);
         }
 
         function setMode(mode) {
@@ -408,19 +411,10 @@
             }
         }
 
-        function clearSimplesErrors() {}
-        function showSimplesErrors() {}
-
         if (postForm && bodyInput) {
             bodyInput.addEventListener("keydown", insertTabIndentation);
-            bodyInput.addEventListener("input", clearSimplesErrors);
             editButton?.addEventListener("click", () => setMode("edit"));
             previewButton?.addEventListener("click", () => setMode("preview"));
-            postForm.addEventListener("simples:errors", event => {
-                showSimplesErrors(event.detail?.errors ?? event.detail?.message ?? []);
-            });
-            window.setSimplesEditorErrors = showSimplesErrors;
-            window.clearSimplesEditorErrors = clearSimplesErrors;
         }
     </script>
 {% endblock %}

@@ -1,1 +1,1 @@
-{"version":3,"file":"CallableSimplesIntegration.d.ts","sourceRoot":"","sources":["../../../ts/src/posts/integration/CallableSimplesIntegration.ts"],"names":[],"mappings":"AAGA,wBAAgB,gBAAgB,CAAC,QAAQ,EAAE,OAAO,QAKjD"}
+{"version":3,"file":"CallableSimplesIntegration.d.ts","sourceRoot":"","sources":["../../../ts/src/posts/integration/CallableSimplesIntegration.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,oBAAoB,EAAE,MAAM,oCAAoC,CAAC;AAG/E,wBAAgB,gBAAgB,CAAC,QAAQ,EAAE,OAAO,EAAE,UAAU,GAAE,oBAAoB,GAAC,SAAqB,QAMzG"}
