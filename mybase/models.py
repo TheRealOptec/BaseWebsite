@@ -111,7 +111,7 @@ class PostLike(models.Model):
     def delete(self, *args, **kwargs):
         self.post.likes -= 1
         self.post.save()
-        self.topic.likes += 1
+        self.topic.likes -= 1
         self.topic.save()
         super(PostLike, self).delete(*args, **kwargs)
 

@@ -42,6 +42,20 @@ class ForumTestCase(TestCase):
 
 
 class PostEditorTests(ForumTestCase):
+    def test_make_post_page_includes_simples_error_display_hook(self):
+        creator = self.create_user('preview-author')
+        topic = self.create_topic('Preview Topic')
+        self.login(creator)
+
+        response = self.client.get(
+            reverse('mybase:make_post', args=[topic.slug])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-simples-error-panel')
+        self.assertContains(response, 'data-simples-error-list')
+        self.assertContains(response, 'window.setSimplesEditorErrors')
+
     def test_make_post_creates_post_and_redirects_to_detail(self):
         creator = self.create_user('creator')
         topic = self.create_topic('Announcements')
@@ -162,9 +176,11 @@ class BackendInteractionTests(ForumTestCase):
         )
 
         self.post.refresh_from_db()
+        self.topic.refresh_from_db()
         self.assertRedirects(response, reverse('mybase:home'))
-        self.assertTrue(PostLike.objects.filter(user=self.other_user, post=self.post).exists())
+        self.assertTrue(PostLike.objects.filter(user=self.other_user, post=self.post, topic=self.topic).exists())
         self.assertEqual(self.post.likes, 1)
+        self.assertEqual(self.topic.likes, 1)
 
     def test_like_post_second_request_removes_like_and_resets_count(self):
         self.login(self.other_user)
@@ -175,12 +191,14 @@ class BackendInteractionTests(ForumTestCase):
         )
 
         self.post.refresh_from_db()
+        self.topic.refresh_from_db()
         self.assertRedirects(
             response,
             reverse('mybase:view_post', args=[self.topic.slug, self.post.slug]),
         )
-        self.assertFalse(PostLike.objects.filter(user=self.other_user, post=self.post).exists())
+        self.assertFalse(PostLike.objects.filter(user=self.other_user, post=self.post, topic=self.topic).exists())
         self.assertEqual(self.post.likes, 0)
+        self.assertEqual(self.topic.likes, 0)
 
     def test_view_post_post_request_adds_comment_records_history_and_increments_views(self):
         self.login(self.other_user)
@@ -200,7 +218,7 @@ class BackendInteractionTests(ForumTestCase):
         self.assertContains(response, 'Nice post')
 
     def test_view_topic_records_history_and_marks_post_as_liked_for_user(self):
-        PostLike.objects.create(user=self.other_user, post=self.post)
+        PostLike.objects.create(user=self.other_user, post=self.post, topic=self.topic)
         self.login(self.other_user)
 
         response = self.client.get(

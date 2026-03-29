@@ -141,6 +141,16 @@
                                     {% endif %}
                                 </div>
 
+                                <div
+                                    class="alert alert-danger d-none mt-3"
+                                    data-simples-error-panel
+                                    role="alert"
+                                    aria-live="polite"
+                                >
+                                    <p class="fw-semibold mb-2">Simples errors</p>
+                                    <ul class="mb-0 ps-3" data-simples-error-list></ul>
+                                </div>
+
                                 <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
                                     <div class="simples-preview-surface" data-simples-preview-output>
                                         <p class="text-muted mb-0">Preview your compiled post here.</p>
@@ -194,6 +204,16 @@
                                         placeholder="Write your post here..."
                                         required
                                     ></textarea>
+                                </div>
+
+                                <div
+                                    class="alert alert-danger d-none mt-3"
+                                    data-simples-error-panel
+                                    role="alert"
+                                    aria-live="polite"
+                                >
+                                    <p class="fw-semibold mb-2">Simples errors</p>
+                                    <ul class="mb-0 ps-3" data-simples-error-list></ul>
                                 </div>
 
                                 <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
@@ -276,6 +296,8 @@
         const editorPanel = postForm?.querySelector("[data-simples-editor-panel]");
         const previewPanel = postForm?.querySelector("[data-simples-preview-panel]");
         const previewOutput = postForm?.querySelector("[data-simples-preview-output]");
+        const errorPanel = postForm?.querySelector("[data-simples-error-panel]");
+        const errorList = postForm?.querySelector("[data-simples-error-list]");
         const editButton = postForm?.querySelector("[data-simples-mode='edit']");
         const previewButton = postForm?.querySelector("[data-simples-mode='preview']");
 
@@ -285,6 +307,58 @@
             paragraph.className = "simples-plain-text mb-0";
             paragraph.textContent = source;
             target.appendChild(paragraph);
+        }
+
+        function normaliseErrors(errors) {
+            if (Array.isArray(errors)) {
+                return errors
+                    .map(error => typeof error === "string" ? error : String(error ?? ""))
+                    .map(error => error.trim())
+                    .filter(Boolean);
+            }
+
+            if (typeof errors === "string") {
+                const message = errors.trim();
+                return message ? [message] : [];
+            }
+
+            if (errors == null) {
+                return [];
+            }
+
+            const message = String(errors).trim();
+            return message ? [message] : [];
+        }
+
+        function clearSimplesErrors() {
+            if (!errorPanel || !errorList) {
+                return;
+            }
+
+            errorList.innerHTML = "";
+            errorPanel.classList.add("d-none");
+        }
+
+        function showSimplesErrors(errors) {
+            if (!errorPanel || !errorList) {
+                return;
+            }
+
+            const messages = normaliseErrors(errors);
+            errorList.innerHTML = "";
+
+            if (!messages.length) {
+                errorPanel.classList.add("d-none");
+                return;
+            }
+
+            for (const message of messages) {
+                const item = document.createElement("li");
+                item.textContent = message;
+                errorList.appendChild(item);
+            }
+
+            errorPanel.classList.remove("d-none");
         }
 
         function insertTabIndentation(event) {
@@ -303,12 +377,13 @@
             bodyInput.selectionStart = bodyInput.selectionEnd = start + indentation.length;
         }
 
-        function renderPreview() {
+        async function renderPreview() {
             if (!bodyInput || !previewOutput) {
                 return;
             }
 
             const source = bodyInput.value.trim();
+            clearSimplesErrors();
             previewOutput.innerHTML = "";
 
             if (!source) {
@@ -318,11 +393,13 @@
 
             try {
                 if (source.startsWith("<simples")) {
-                    SimplesCompiler.compile(source).then(frag => previewOutput.appendChild(frag));
+                    const fragment = await SimplesCompiler.compile(source);
+                    previewOutput.appendChild(fragment);
                 } else {
                     renderPlainText(source, previewOutput);
                 }
             } catch (error) {
+                showSimplesErrors(error instanceof Error ? error.message : String(error));
                 renderPlainText(source, previewOutput);
             }
         }
@@ -349,8 +426,14 @@
 
         if (postForm && bodyInput) {
             bodyInput.addEventListener("keydown", insertTabIndentation);
+            bodyInput.addEventListener("input", clearSimplesErrors);
             editButton?.addEventListener("click", () => setMode("edit"));
             previewButton?.addEventListener("click", () => setMode("preview"));
+            postForm.addEventListener("simples:errors", event => {
+                showSimplesErrors(event.detail?.errors ?? event.detail?.message ?? []);
+            });
+            window.setSimplesEditorErrors = showSimplesErrors;
+            window.clearSimplesEditorErrors = clearSimplesErrors;
         }
     </script>
 {% endblock %}
