@@ -257,10 +257,10 @@
 
                                         <div class="d-flex flex-wrap gap-2">
                                             {% if user.is_authenticated %}
-                                                {% url 'mybase:like_post' topic.slug post.slug as post_like_url %}
+                                                {% url 'mybase:toggle_like_post' topic.slug post.slug as topic_post_like_url %}
                                                 <form
                                                     method="post"
-                                                    action="/mybase/topic/{{ topic.slug }}/post/{{ post.slug }}/like-post/"
+                                                    action="{% if topic_post_like_url %}{{ topic_post_like_url }}{% else %}/mybase/topic/{{ topic.slug }}/post/{{ post.slug }}/like-post/{% endif %}"
                                                     class="d-inline"
                                                 >
                                                     {% csrf_token %}

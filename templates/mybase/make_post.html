@@ -104,136 +104,58 @@
                     <form method="post" enctype="multipart/form-data" data-simples-form>
                         {% csrf_token %}
 
-                        {% if post_form %}
-                            {% if post_form.non_field_errors %}
-                                <div class="alert alert-danger">
-                                    {{ post_form.non_field_errors }}
-                                </div>
-                            {% endif %}
+                        {% if post_form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ post_form.non_field_errors }}
+                            </div>
+                        {% endif %}
 
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ post_form.title.id_for_label }}">Title</label>
-                                {{ post_form.title }}
-                                {% if post_form.title.errors %}
-                                    <div class="text-danger small mt-1">{{ post_form.title.errors }}</div>
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ post_form.title.id_for_label }}">Title</label>
+                            {{ post_form.title }}
+                            {% if post_form.title.errors %}
+                                <div class="text-danger small mt-1">{{ post_form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="{{ post_form.body.id_for_label }}">Post Content</label>
+                            <p class="helptext mb-3">
+                                Write the raw Simples/XML source here, then switch to preview mode to check the compiled output. Press Tab to insert indentation in the editor.
+                            </p>
+
+                            <div class="simples-mode-switch mb-3" data-simples-toggle>
+                                <button type="button" class="btn btn-primary btn-sm" data-simples-mode="edit" aria-pressed="true">
+                                    Edit Raw Simples
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-simples-mode="preview" aria-pressed="false">
+                                    Preview Output
+                                </button>
+                            </div>
+
+                            <div data-simples-editor-panel>
+                                {{ post_form.body }}
+                                {% if post_form.body.errors %}
+                                    <div class="text-danger small mt-1">{{ post_form.body.errors }}</div>
                                 {% endif %}
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label" for="{{ post_form.body.id_for_label }}">Post Content</label>
-                                <p class="helptext mb-3">
-                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output. Press Tab to insert indentation in the editor.
-                                </p>
-
-                                <div class="simples-mode-switch mb-3" data-simples-toggle>
-                                    <button type="button" class="btn btn-primary btn-sm" data-simples-mode="edit" aria-pressed="true">
-                                        Edit Raw Simples
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-simples-mode="preview" aria-pressed="false">
-                                        Preview Output
-                                    </button>
-                                </div>
-
-                                <div data-simples-editor-panel>
-                                    {{ post_form.body }}
-                                    {% if post_form.body.errors %}
-                                        <div class="text-danger small mt-1">{{ post_form.body.errors }}</div>
-                                    {% endif %}
-                                </div>
-
-                                <div
-                                    class="alert alert-danger d-none mt-3"
-                                    data-simples-error-panel
-                                    role="alert"
-                                    aria-live="polite"
-                                >
-                                    <p class="fw-semibold mb-2">Simples errors</p>
-                                    <ul class="mb-0 ps-3" data-simples-error-list></ul>
-                                </div>
-
-                                <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
-                                    <div class="simples-preview-surface simplesout-main" data-simples-preview-output>
-                                        <p class="text-muted mb-0">Preview your compiled post here.</p>
-                                    </div>
-                                </div>
+                            <div
+                                class="alert alert-danger d-none mt-3"
+                                data-simples-error-panel
+                                role="alert"
+                                aria-live="polite"
+                            >
+                                <p class="fw-semibold mb-2">Simples errors</p>
+                                <ul class="mb-0 ps-3" data-simples-error-list></ul>
                             </div>
 
-                            {% if post_form.image %}
-                                <div class="mb-4">
-                                    <label class="form-label" for="{{ post_form.image.id_for_label }}">Image (optional)</label>
-                                    {{ post_form.image }}
-                                    {% if post_form.image.errors %}
-                                        <div class="text-danger small mt-1">{{ post_form.image.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            <div class="mb-3">
-                                <label for="postTitle" class="form-label">Title</label>
-                                <input
-                                    type="text"
-                                    id="postTitle"
-                                    name="title"
-                                    class="form-control"
-                                    placeholder="Enter your post title"
-                                    required
-                                />
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="postBody" class="form-label">Post Content</label>
-                                <p class="helptext mb-3">
-                                    Write the raw Simples/XML source here, then switch to preview mode to check the compiled output. Press Tab to insert indentation in the editor.
-                                </p>
-
-                                <div class="simples-mode-switch mb-3" data-simples-toggle>
-                                    <button type="button" class="btn btn-primary btn-sm" data-simples-mode="edit" aria-pressed="true">
-                                        Edit Raw Simples
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-simples-mode="preview" aria-pressed="false">
-                                        Preview Output
-                                    </button>
-                                </div>
-
-                                <div data-simples-editor-panel>
-                                    <textarea
-                                        id="postBody"
-                                        name="body"
-                                        rows="8"
-                                        class="form-control"
-                                        placeholder="Write your post here..."
-                                        required
-                                    ></textarea>
-                                </div>
-
-                                <div
-                                    class="alert alert-danger d-none mt-3"
-                                    data-simples-error-panel
-                                    role="alert"
-                                    aria-live="polite"
-                                >
-                                    <p class="fw-semibold mb-2">Simples errors</p>
-                                    <ul class="mb-0 ps-3" data-simples-error-list></ul>
-                                </div>
-
-                                <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
-                                    <div class="simples-preview-surface" data-simples-preview-output>
-                                        <p class="text-muted mb-0">Preview your compiled post here.</p>
-                                    </div>
+                            <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
+                                <div class="simples-preview-surface simplesout-main" data-simples-preview-output>
+                                    <p class="text-muted mb-0">Preview your compiled post here.</p>
                                 </div>
                             </div>
-
-                            <div class="mb-4">
-                                <label for="postImage" class="form-label">Image (optional)</label>
-                                <input
-                                    type="file"
-                                    id="postImage"
-                                    name="image"
-                                    class="form-control"
-                                    accept="image/*"
-                                >
-                            </div>
-                        {% endif %}
+                        </div>
 
                         <div class="d-flex flex-wrap gap-2">
                             <button type="submit" class="btn btn-primary">
@@ -287,64 +209,6 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script type="module">
-        import {} from "{% static 'js/posts/simples/NodeInit.js' %}";
-        import { SimplesCompiler } from "{% static 'js/posts/simples/SimplesCompiler.js' %}";
-
-        function normaliseErrors(errors) {
-            if (Array.isArray(errors)) {
-                return errors
-                    .map(error => typeof error === "string" ? error : String(error ?? ""))
-                    .map(error => error.trim())
-                    .filter(Boolean);
-            }
-
-            if (typeof errors === "string") {
-                const message = errors.trim();
-                return message ? [message] : [];
-            }
-
-            if (errors == null) {
-                return [];
-            }
-
-            const message = String(errors).trim();
-            return message ? [message] : [];
-        }
-
-        function clearSimplesErrors() {
-            if (!errorPanel || !errorList) {
-                return;
-            }
-
-            errorList.innerHTML = "";
-            errorPanel.classList.add("d-none");
-        }
-
-        function showSimplesErrors(errors) {
-            if (!errorPanel || !errorList) {
-                return;
-            }
-
-            const messages = normaliseErrors(errors);
-            errorList.innerHTML = "";
-
-            if (!messages.length) {
-                errorPanel.classList.add("d-none");
-                return;
-            }
-
-            for (const message of messages) {
-                const item = document.createElement("li");
-                item.textContent = message;
-                errorList.appendChild(item);
-            }
-
-            errorPanel.classList.remove("d-none");
-        }
-    </script>
-
-    <!-- New Stuff -->
     <script type="module">
         import { integrateSimples } from "{% static 'js/posts/integration/CallableSimplesIntegration.js' %}";
         import { ErrorPanelChannel } from "{% static 'js/posts/simples/error_handling/ErrorPanelChannel.js' %}";

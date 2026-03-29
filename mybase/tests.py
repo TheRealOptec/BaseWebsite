@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from mybase.models import Comment, Page, PostHistory, PostLike, Topic, TopicHistory
+from mybase.models import Comment, Page, PostHistory, PostLike, Topic, TopicHistory, UserProfile
 
 
 class ForumTestCase(TestCase):
@@ -42,7 +42,7 @@ class ForumTestCase(TestCase):
 
 
 class PostEditorTests(ForumTestCase):
-    def test_make_post_page_includes_simples_error_display_hook(self):
+    def test_make_post_page_includes_simples_error_display_integration(self):
         creator = self.create_user('preview-author')
         topic = self.create_topic('Preview Topic')
         self.login(creator)
@@ -54,7 +54,7 @@ class PostEditorTests(ForumTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'data-simples-error-panel')
         self.assertContains(response, 'data-simples-error-list')
-        self.assertContains(response, 'window.setSimplesEditorErrors')
+        self.assertContains(response, 'CallableSimplesIntegration.js')
 
     def test_make_post_creates_post_and_redirects_to_detail(self):
         creator = self.create_user('creator')
@@ -77,7 +77,7 @@ class PostEditorTests(ForumTestCase):
             reverse('mybase:view_post', args=[topic.slug, created_post.slug]),
         )
 
-    def test_make_post_rejects_second_post_in_same_topic(self):
+    def test_make_post_allows_second_post_in_same_topic(self):
         topic_reviewer = self.create_user('topic-reviewer')
         self.login(topic_reviewer)
 
@@ -89,14 +89,17 @@ class PostEditorTests(ForumTestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            'This topic already has a post and cannot accept another one right now.',
-        )
-        self.assertEqual(Page.objects.filter(topic=self.topic).count(), 1)
+        created_post = Page.objects.filter(topic=self.topic).order_by('-id').first()
 
-    def test_make_post_rejects_second_post_for_same_author(self):
+        self.assertRedirects(
+            response,
+            reverse('mybase:view_post', args=[self.topic.slug, created_post.slug]),
+        )
+        self.assertEqual(Page.objects.filter(topic=self.topic).count(), 2)
+        self.assertEqual(created_post.author, topic_reviewer)
+        self.assertEqual(created_post.title, 'Duplicate Topic Post')
+
+    def test_make_post_allows_second_post_for_same_author(self):
         second_topic = self.create_topic('Release Notes')
         self.login(self.author)
 
@@ -108,12 +111,14 @@ class PostEditorTests(ForumTestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
+        created_post = Page.objects.get(topic=second_topic)
+
+        self.assertRedirects(
             response,
-            'Your account already has a post and cannot create another one right now.',
+            reverse('mybase:view_post', args=[second_topic.slug, created_post.slug]),
         )
-        self.assertFalse(Page.objects.filter(topic=second_topic).exists())
+        self.assertEqual(created_post.author, self.author)
+        self.assertEqual(created_post.title, 'Second Author Post')
 
     def test_edit_post_prefills_existing_content_for_author(self):
         self.login(self.author)
@@ -164,7 +169,101 @@ class PostEditorTests(ForumTestCase):
         self.assertEqual(self.post.body, 'Original body')
 
 
+class FormFlowTests(ForumTestCase):
+    def test_sign_up_creates_profile_logs_user_in_and_redirects_home(self):
+        response = self.client.post(
+            reverse('sign_up'),
+            {
+                'username': 'new-user',
+                'email': 'new-user@example.com',
+                'password1': 'safe-password-123',
+                'password2': 'safe-password-123',
+            },
+        )
+
+        created_user = User.objects.get(username='new-user')
+        self.assertRedirects(response, reverse('mybase:home'))
+        self.assertTrue(UserProfile.objects.filter(user=created_user).exists())
+        self.assertEqual(self.client.session.get('_auth_user_id'), str(created_user.pk))
+
+    def test_user_login_respects_safe_next_redirect(self):
+        response = self.client.post(
+            reverse('user_login'),
+            {
+                'username': self.author.username,
+                'password': self.password,
+                'next': reverse('mybase:make_topic'),
+            },
+        )
+
+        self.assertRedirects(response, reverse('mybase:make_topic'))
+        self.assertEqual(self.client.session.get('_auth_user_id'), str(self.author.pk))
+
+    def test_edit_user_profile_updates_user_and_profile_fields(self):
+        self.login(self.author)
+
+        response = self.client.post(
+            reverse('edit_user_profile'),
+            {
+                'username': 'updated-author',
+                'email': 'updated-author@example.com',
+                'bio': 'Updated bio text',
+            },
+        )
+
+        self.author.refresh_from_db()
+        profile = UserProfile.objects.get(user=self.author)
+
+        self.assertRedirects(response, reverse('view_profile', args=[self.author.username]))
+        self.assertEqual(self.author.username, 'updated-author')
+        self.assertEqual(self.author.email, 'updated-author@example.com')
+        self.assertEqual(profile.bio, 'Updated bio text')
+
+    def test_make_topic_rejects_whitespace_only_name(self):
+        self.login(self.author)
+
+        response = self.client.post(
+            reverse('mybase:make_topic'),
+            {
+                'name': '   ',
+                'description': 'Whitespace-only topic name',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Topic name cannot be blank.')
+        self.assertFalse(Topic.objects.filter(description='Whitespace-only topic name').exists())
+
+    def test_view_post_rejects_whitespace_only_comment(self):
+        self.login(self.other_user)
+
+        response = self.client.post(
+            reverse('mybase:view_post', args=[self.topic.slug, self.post.slug]),
+            {
+                'body': '   ',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Comment cannot be blank.')
+        self.assertFalse(Comment.objects.filter(author=self.other_user, post=self.post).exists())
+
+
 class BackendInteractionTests(ForumTestCase):
+    def test_toggle_like_post_redirects_to_topic_and_updates_count(self):
+        self.login(self.other_user)
+
+        response = self.client.post(
+            reverse('mybase:toggle_like_post', args=[self.topic.slug, self.post.slug])
+        )
+
+        self.post.refresh_from_db()
+        self.topic.refresh_from_db()
+        self.assertRedirects(response, reverse('mybase:view_topic', args=[self.topic.slug]))
+        self.assertTrue(PostLike.objects.filter(user=self.other_user, post=self.post, topic=self.topic).exists())
+        self.assertEqual(self.post.likes, 1)
+        self.assertEqual(self.topic.likes, 1)
+
     def test_like_post_creates_like_updates_count_and_honours_next_redirect(self):
         self.login(self.other_user)
 

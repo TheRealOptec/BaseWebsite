@@ -2,11 +2,17 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponse
-from mybase.forms import PostForm, UserForm, UserProfileForm
+from mybase.forms import (
+    CommentForm,
+    LoginForm,
+    PostForm,
+    SignUpForm,
+    TopicForm,
+    UserAccountForm,
+    UserProfileEditForm,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
-
-from django.template.defaultfilters import slugify
 
 from mybase.models import Topic,Page,User,UserProfile,Comment,PostLike,TopicHistory,PostHistory
 
@@ -36,6 +42,12 @@ def _render_post_form(request, topic, post_form, post=None):
         "post": post,
         "post_form": post_form,
         "is_editing": post is not None,
+    })
+
+
+def _render_sign_up(request, user_form):
+    return render(request, "mybase/sign_up.html", context={
+        "user_form": user_form,
     })
 
 def redirect_home(request):
@@ -79,81 +91,39 @@ def search(request):
     return render(request, 'mybase/search.html', context=context_dict)
 
 def sign_up(request):
-
-    if request.method == "POST":
-        user_form = UserForm(request.POST)
-        profile_form = UserProfileForm(request.POST)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user.set_password(user.password)
-            user.save()
-
-            profile = profile_form.save(commit=False)
-            profile.user = user
-
-            # Add profile picture
-            if 'pfp' in request.FILES:
-                profile.pfp = request.FILES['pfp']
-            
-            # This causes an error and I'm not sure why
-            #profile.save()
-            return redirect(reverse("mybase:home"))
-        else:
-            print(user_form.errors, profile_form.errors)
-    else:
-        user_form = UserForm()
-        profile_form = UserProfileForm()
-    
-    return render(request, "mybase/sign_up.html", context={
-        "user_form": user_form,
-        "profile_form": profile_form
-    })
+    return sign_up_v2(request)
 
 def sign_up_v2(request):
-    if request.method == "POST":
-        username = request.POST.get("username", None)
-        email = request.POST.get("email", None)
-        password1 = request.POST.get("password1", None)
-        password2 = request.POST.get("password2", None)
-        # Check data validity
-        if (password1 is None or password2 is None or email is None or username is None):
-            print("A field is invalid on sign_up_v2")
-            return render(request, "mybase/sign_up.html", context={})
-        # Check if the password has been confirmed properly
-        if (password1 != password2):
-            # TODO - try and do this dynamically if possible, I believe we could use Ajax for this
-            return HttpResponse("Did not confirm password")
-        # Sign in and render new home page
-        user = User(username=username, email=email, password=password1)
-        user.save()
-        userProfile = UserProfile(user=user)
-        userProfile.save()
-        login(request, user)
+    user_form = SignUpForm(request.POST or None)
+
+    if request.method == "POST" and user_form.is_valid():
+        user = user_form.save()
+        UserProfile.objects.get_or_create(user=user)
+
+        authenticated_user = authenticate(
+            username=user.username,
+            password=user_form.cleaned_data["password1"],
+        )
+        if authenticated_user is not None:
+            login(request, authenticated_user)
         return redirect(reverse("mybase:home"))
-        
-    return render(request, "mybase/sign_up.html", context={})
+
+    return _render_sign_up(request, user_form)
 
 def user_login(request):
-    invalid_details = False
-    account_disabled = False
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+    form = LoginForm(request, data=request.POST or None)
 
-        user = authenticate(username=username, password=password)
+    if request.method == "POST" and form.is_valid():
+        login(request, form.get_user())
 
-        if user:
-            if user.is_active:
-                login(request, user)
-                return redirect(reverse("mybase:home"))
-            else:
-                account_disabled = True
-        else:
-            invalid_details = True
+        next_url = request.POST.get("next") or request.GET.get("next", "")
+        if next_url.startswith('/'):
+            return redirect(next_url)
+
+        return redirect(reverse("mybase:home"))
+
     return render(request, 'mybase/login.html', context={
-        "invalid_details": invalid_details,
-        "account_disabled": account_disabled
+        "form": form,
     })
 
 @login_required
@@ -163,28 +133,26 @@ def user_logout(request):
 
 @login_required
 def edit_user_profile(request):
-    try:
-        profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        profile = None
-        print("Profile is None")
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
     if request.method == "POST":
-        username = request.POST["username"]
-        bio = request.POST["bio"]
-        if request.user.is_authenticated:
-            if profile is not None:
-                # Change bio
-                profile.bio = bio
-                profile.save()
-                # Change username (if username not taken)
-                if not UserProfile.objects.filter(slug=slugify(username)).exists():
-                    request.user.username = username
-                    request.user.save()
-                else:
-                    # TODO - change this
-                    return HttpResponse("Username has been taken")
+        user_form = UserAccountForm(request.POST, instance=request.user)
+        profile_form = UserProfileEditForm(request.POST, request.FILES, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+            saved_profile = profile_form.save(commit=False)
+            saved_profile.user = user
+            saved_profile.save()
+            return redirect(reverse("view_profile", args=[user.username]))
+    else:
+        user_form = UserAccountForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=profile)
+
     return render(request, 'mybase/edit_profile.html', context={
-        "profile": profile
+        "profile": profile,
+        "user_form": user_form,
+        "profile_form": profile_form,
     })
 
 def view_profile(request, username):
@@ -211,6 +179,8 @@ def view_post(request, topic_slug, post_name_slug):
     except:
         # TODO - remove this
         return HttpResponse("No such post exists")
+    comment_form = CommentForm()
+
     # Increase view counts
     post.views += 1
     post.save()
@@ -220,19 +190,21 @@ def view_post(request, topic_slug, post_name_slug):
         post_history.save()
     # If comment is being added then add comment
     if request.method == "POST":
-        # Got help from: https://forum.djangoproject.com/t/how-to-get-current-user/10234/5
-        comment = Comment(author=request.user, post=post, body=request.POST.get("body", ""))
-        comment.save()
-    try:
-        comments = Comment.objects.filter(post=post).values()
-    except:
-        comments = None
+        comment_form = CommentForm(request.POST)
+        if request.user.is_authenticated and comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            comment_form = CommentForm()
+    comments = Comment.objects.filter(post=post).select_related("author").order_by("-created_at")
     post.user_has_liked = False
     if request.user.is_authenticated:
         post.user_has_liked = PostLike.objects.filter(user=request.user, post=post).exists()
     return render(request, 'mybase/post_detail.html', context={
         "post": post,
-        "comments": comments
+        "comments": comments,
+        "comment_form": comment_form,
     })
 
 @login_required(login_url='/login/')
@@ -291,18 +263,15 @@ def view_topic(request, topic_slug):
 
 @login_required
 def make_topic(request):
-    # Adapted code from: https://www.w3schools.com/django/django_insert_data.php
-    if request.method == "POST":
-        topic_name = request.POST.get("name", None)
-        if topic_name is None:
-            # TODO - could change this
-            return redirect(reverse('mybase:make_topic'))
-        topic_description = request.POST.get("description", "")
-        topic = Topic(name=topic_name, description=topic_description)
-        topic.save()
-        # TODO - change this to a reverse
-        return redirect(f"/mybase/topic/{topic_name}/")
-    return render(request, 'mybase/make_topic.html', context={})
+    topic_form = TopicForm(request.POST or None)
+
+    if request.method == "POST" and topic_form.is_valid():
+        topic = topic_form.save()
+        return redirect(reverse("mybase:view_topic", args=[topic.slug]))
+
+    return render(request, 'mybase/make_topic.html', context={
+        "topic_form": topic_form,
+    })
 
 @login_required
 def make_post(request, topic_slug):
@@ -362,29 +331,27 @@ def posting_guide(request):
     return render(request, 'mybase/posting_guide.html', context={})
 
 def toggle_like_post(request, topic_slug, post_slug):
-    # Ensure that this is a POST request - otherwise let it return a 404 not found
-    if request.method == "POST":
-        # Ensure user is authenticated
-        if request.user.is_authenticated:
-            # Attempt to get the the topic and post
-            try:
-                topic = Topic.objects.get(slug=topic_slug)
-            except:
-                # TODO - change this later
-                return HttpResponse("Invalid topic")
-            try:
-                post = Page.objects.get(slug=post_slug, topic=topic)
-            except:
-                # TODO - change this later
-                return HttpResponse("Invalid post")
-            # Toggle the likes - (could use get_or_create here to simplify logic)
-            try:
-                pl = PostLike.objects.get(user=request.user, post=post, topic=topic)
-                # If liked vvv
-                pl.delete() # Please don't explode things
-            except:
-                # If not liked vvv
-                pl = PostLike(user=request.user, post=post, topic=topic)
-                pl.save()
-            # TODO - also change this to a reverse
-            return redirect(f"/mybase/topic/{topic.slug}/")
+    if request.method != "POST":
+        return redirect(reverse("mybase:view_topic", args=[topic_slug]))
+
+    if not request.user.is_authenticated:
+        return redirect(reverse("mybase:view_topic", args=[topic_slug]))
+
+    try:
+        topic = Topic.objects.get(slug=topic_slug)
+    except:
+        return HttpResponse("Invalid topic")
+
+    try:
+        post = Page.objects.get(slug=post_slug, topic=topic)
+    except:
+        return HttpResponse("Invalid post")
+
+    try:
+        post_like = PostLike.objects.get(user=request.user, post=post, topic=topic)
+        post_like.delete()
+    except:
+        post_like = PostLike(user=request.user, post=post, topic=topic)
+        post_like.save()
+
+    return redirect(reverse("mybase:view_topic", args=[topic.slug]))

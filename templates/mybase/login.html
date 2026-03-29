@@ -26,64 +26,29 @@
                         <a href="{{ edit_profile_url|default:'/edit-profile/' }}" class="btn btn-outline-secondary">Edit Profile</a>
                     </div>
                 {% else %}
-                    <form method="post" action="/login/">
+                    <form method="post" action="{% url 'user_login' %}">
                         {% csrf_token %}
-
-                        {% if form %}
-                            {{ form.non_field_errors }}
-
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
-                                {% endif %}
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
-                                {{ form.password }}
-                                {% if form.password.errors %}
-                                    <div class="text-danger small mt-1">{{ form.password.errors }}</div>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="mb-3">
-                                <label for="loginUsername" class="form-label">Username</label>
-                                <input
-                                    type="text"
-                                    id="loginUsername"
-                                    name="username"
-                                    class="form-control"
-                                    placeholder="Enter your username"
-                                    required
-                                >
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="loginPassword" class="form-label">Password</label>
-                                <input
-                                    type="password"
-                                    id="loginPassword"
-                                    name="password"
-                                    class="form-control"
-                                    placeholder="Enter your password"
-                                    required
-                                >
-                            </div>
-                            <!-- TODO: change this design (I just put something random) -->
-                            {% if account_disabled %}
-                                <div class="text-danger small mt-1">
-                                    Your account has been disabled
-                                </div>
-                            {% else %}
-                                {% if invalid_details %}
-                                <div class="text-danger small mt-1">
-                                    Invalid login details
-                                </div>
-                                {% endif %}
-                            {% endif %}
+                        {% if request.GET.next or request.POST.next %}
+                            <input type="hidden" name="next" value="{{ request.GET.next|default:request.POST.next }}">
                         {% endif %}
+
+                        {{ form.non_field_errors }}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
 
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary">

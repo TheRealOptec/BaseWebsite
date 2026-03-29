@@ -278,30 +278,15 @@
                     <form method="post">
                         {% csrf_token %}
 
-                        {% if comment_form %}
-                            {{ comment_form.non_field_errors }}
+                        {{ comment_form.non_field_errors }}
 
-                            {% if comment_form.body %}
-                                <div class="mb-3">
-                                    <label class="form-label" for="{{ comment_form.body.id_for_label }}">Your Comment</label>
-                                    {{ comment_form.body }}
-                                    {% if comment_form.body.errors %}
-                                        <div class="text-danger small mt-1">{{ comment_form.body.errors }}</div>
-                                    {% endif %}
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ comment_form.body.id_for_label }}">Your Comment</label>
+                            {{ comment_form.body }}
+                            {% if comment_form.body.errors %}
+                                <div class="text-danger small mt-1">{{ comment_form.body.errors }}</div>
                             {% endif %}
-                        {% else %}
-                            <div class="mb-3">
-                                <label for="commentBody" class="form-label">Your Comment</label>
-                                <textarea
-                                    id="commentBody"
-                                    name="body"
-                                    rows="4"
-                                    class="form-control"
-                                    placeholder="Write your comment here..."
-                                ></textarea>
-                            </div>
-                        {% endif %}
+                        </div>
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-chat-dots"></i> Add Comment

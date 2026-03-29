@@ -23,13 +23,8 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        {% if user_form %}
-                            {{ user_form.non_field_errors }}
-                        {% endif %}
-
-                        {% if profile_form %}
-                            {{ profile_form.non_field_errors }}
-                        {% endif %}
+                        {{ user_form.non_field_errors }}
+                        {{ profile_form.non_field_errors }}
 
                         <div class="row g-4">
 
@@ -39,45 +34,21 @@
                                     <div class="card-body">
                                         <h2 class="h5 mb-3">Account Details</h2>
 
-                                        {% if user_form %}
-                                            <div class="mb-3">
-                                                <label class="form-label" for="{{ user_form.username.id_for_label }}">Username</label>
-                                                {{ user_form.username }}
-                                                {% if user_form.username.errors %}
-                                                    <div class="text-danger small mt-1">{{ user_form.username.errors }}</div>
-                                                {% endif %}
-                                            </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="{{ user_form.username.id_for_label }}">Username</label>
+                                            {{ user_form.username }}
+                                            {% if user_form.username.errors %}
+                                                <div class="text-danger small mt-1">{{ user_form.username.errors }}</div>
+                                            {% endif %}
+                                        </div>
 
-                                            <div class="mb-3">
-                                                <label class="form-label" for="{{ user_form.email.id_for_label }}">Email</label>
-                                                {{ user_form.email }}
-                                                {% if user_form.email.errors %}
-                                                    <div class="text-danger small mt-1">{{ user_form.email.errors }}</div>
-                                                {% endif %}
-                                            </div>
-                                        {% else %}
-                                            <div class="mb-3">
-                                                <label for="editUsername" class="form-label">Username</label>
-                                                <input
-                                                    type="text"
-                                                    id="editUsername"
-                                                    name="username"
-                                                    class="form-control"
-                                                    value="{{ user.username }}"
-                                                >
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="editEmail" class="form-label">Email</label>
-                                                <input
-                                                    type="email"
-                                                    id="editEmail"
-                                                    name="email"
-                                                    class="form-control"
-                                                    value="{{ user.email }}"
-                                                >
-                                            </div>
-                                        {% endif %}
+                                        <div class="mb-3">
+                                            <label class="form-label" for="{{ user_form.email.id_for_label }}">Email</label>
+                                            {{ user_form.email }}
+                                            {% if user_form.email.errors %}
+                                                <div class="text-danger small mt-1">{{ user_form.email.errors }}</div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -88,57 +59,21 @@
                                     <div class="card-body">
                                         <h2 class="h5 mb-3">Profile Details</h2>
 
-                                        {% if profile_form %}
-                                            {% if profile_form.profile_picture %}
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="{{ profile_form.profile_picture.id_for_label }}">Profile Picture</label>
-                                                    {{ profile_form.profile_picture }}
-                                                    {% if profile_form.profile_picture.errors %}
-                                                        <div class="text-danger small mt-1">{{ profile_form.profile_picture.errors }}</div>
-                                                    {% endif %}
-                                                </div>
-                                            {% elif profile_form.pfp %}
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="{{ profile_form.pfp.id_for_label }}">Profile Picture</label>
-                                                    {{ profile_form.pfp }}
-                                                    {% if profile_form.pfp.errors %}
-                                                        <div class="text-danger small mt-1">{{ profile_form.pfp.errors }}</div>
-                                                    {% endif %}
-                                                </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="{{ profile_form.pfp.id_for_label }}">Profile Picture</label>
+                                            {{ profile_form.pfp }}
+                                            {% if profile_form.pfp.errors %}
+                                                <div class="text-danger small mt-1">{{ profile_form.pfp.errors }}</div>
                                             {% endif %}
+                                        </div>
 
-                                            {% if profile_form.bio %}
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="{{ profile_form.bio.id_for_label }}">Bio</label>
-                                                    {{ profile_form.bio }}
-                                                    {% if profile_form.bio.errors %}
-                                                        <div class="text-danger small mt-1">{{ profile_form.bio.errors }}</div>
-                                                    {% endif %}
-                                                </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                                            {{ profile_form.bio }}
+                                            {% if profile_form.bio.errors %}
+                                                <div class="text-danger small mt-1">{{ profile_form.bio.errors }}</div>
                                             {% endif %}
-                                        {% else %}
-                                            <div class="mb-3">
-                                                <label for="editProfilePicture" class="form-label">Profile Picture</label>
-                                                <input
-                                                    type="file"
-                                                    id="editProfilePicture"
-                                                    name="pfp"
-                                                    class="form-control"
-                                                    accept="image/*"
-                                                >
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="editBio" class="form-label">Bio</label>
-                                                <textarea
-                                                    id="editBio"
-                                                    name="bio"
-                                                    rows="5"
-                                                    class="form-control"
-                                                    placeholder="Write something about yourself..."
-                                                >{{ profile.bio }}</textarea>
-                                            </div>
-                                        {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
