@@ -18,6 +18,11 @@ export class SimplesCompiler {
     }
     static compile(content) {
         return __awaiter(this, void 0, void 0, function* () {
+            return this.compilePure(`<simples> ${content} </simples>`);
+        });
+    }
+    static compilePure(content) {
+        return __awaiter(this, void 0, void 0, function* () {
             // Reset promises
             this.promises = [];
             const frag = SimplesCompiler.interpretXML(document.createDocumentFragment(), SimplesParser.parse(content));

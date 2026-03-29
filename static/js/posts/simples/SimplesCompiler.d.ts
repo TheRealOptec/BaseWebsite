@@ -6,6 +6,7 @@ export declare class SimplesCompiler {
     static addCompilerNode(name: string, compNode: ISimplesNode): void;
     static addPromise(promise: Promise<any>): void;
     static compile(content: string): Promise<DocumentFragment>;
+    static compilePure(content: string): Promise<DocumentFragment>;
     private static interpretXML;
     private static interpretNodeList;
     static getCompilerNode(name: string): ISimplesNode | undefined;

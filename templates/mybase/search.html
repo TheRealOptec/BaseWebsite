@@ -200,7 +200,7 @@
                                     </div>
 
                                     {% if post.body %}
-                                        <p class="text-muted mb-3">{{ post.body|truncatewords:30 }}</p>
+                                        <p class="text-muted mb-3 simplesEditor simplesin-{{ forloop.counter0 }} simplesout-{{ forloop.counter0 }}">{{ post.body }}</p>
                                     {% else %}
                                         <p class="text-muted mb-3">No preview available.</p>
                                     {% endif %}
@@ -222,4 +222,10 @@
 
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="module" src="/static/js/posts/integration/StdSimplesIntegration.js"></script>
 {% endblock %}

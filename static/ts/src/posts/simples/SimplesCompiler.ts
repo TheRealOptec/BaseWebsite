@@ -21,6 +21,10 @@ export class SimplesCompiler {
     }
 
     public static async compile(content: string): Promise<DocumentFragment> {
+        return this.compilePure(`<simples> ${content} </simples>`);
+    }
+
+    public static async compilePure(content: string): Promise<DocumentFragment> {
         // Reset promises
         this.promises = [];
 

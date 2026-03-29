@@ -97,8 +97,9 @@
                                 {% endif %}
 
                                 {% if post.body %}
-                                    <p class="mb-0 text-muted small simplesEditor simplesin-abc simplesout-abc">
-                                        {{ post.body|truncatewords:20 }}
+                                    <!-- Got index stuff from: https://www.w3schools.com/django/django_tags_for.php -->
+                                    <p class="mb-0 text-muted small simplesEditor simplesin-{{ forloop.counter0 }} simplesout-{{ forloop.counter0 }}">
+                                        {{ post.body }}
                                     </p>
                                 {% endif %}
                             </a>

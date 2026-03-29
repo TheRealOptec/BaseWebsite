@@ -233,10 +233,12 @@
                                             <div class="mb-3" data-topic-post-render>
                                                 <textarea class="d-none" data-topic-post-source aria-hidden="true">{{ post.body }}</textarea>
                                                 <div class="simples-rendered-content" data-topic-post-content>
-                                                    <p class="mb-0 text-muted">{{ post.body|truncatewords:30 }}</p>
+                                                    <p class="mb-0 text-muted simplesEditor simplesin-{{ forloop.counter0 }} simplesout-{{ forloop.counter0 }}">
+                                                        {{ post.body }}
+                                                    </p>
                                                 </div>
                                                 <noscript>
-                                                    <p class="mb-0 text-muted">{{ post.body|truncatewords:30 }}</p>
+                                                    <p class="mb-0 text-muted">{{ post.body }}</p>
                                                 </noscript>
                                             </div>
                                         {% else %}
@@ -318,51 +320,5 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script type="module">
-        import {} from "{% static 'js/posts/simples/NodeInit.js' %}";
-        import { SimplesCompiler } from "{% static 'js/posts/simples/SimplesCompiler.js' %}";
-
-        function renderPlainText(source, target) {
-            target.innerHTML = "";
-            const paragraph = document.createElement("p");
-            paragraph.className = "simples-plain-text mb-0";
-            paragraph.textContent = source;
-            target.appendChild(paragraph);
-        }
-
-        async function renderTopicPostPreview(previewWrapper) {
-            const sourceField = previewWrapper.querySelector("[data-topic-post-source]");
-            const previewTarget = previewWrapper.querySelector("[data-topic-post-content]");
-
-            if (!sourceField || !previewTarget) {
-                return;
-            }
-
-            const source = sourceField.value.trim();
-
-            if (!source || !source.startsWith("<simples")) {
-                return;
-            }
-
-            previewTarget.innerHTML = '<p class="text-muted mb-0">Rendering post...</p>';
-
-            try {
-                const compiledContent = await SimplesCompiler.compile(source);
-                previewTarget.innerHTML = "";
-                previewTarget.appendChild(compiledContent);
-            } catch (error) {
-                renderPlainText(source, previewTarget);
-            }
-        }
-
-        async function renderTopicPostPreviews() {
-            const previewWrappers = document.querySelectorAll("[data-topic-post-render]");
-
-            for (const previewWrapper of previewWrappers) {
-                await renderTopicPostPreview(previewWrapper);
-            }
-        }
-
-        renderTopicPostPreviews();
-    </script>
+    <script type="module" src="/static/js/posts/integration/StdSimplesIntegration.js"></script>
 {% endblock %}
