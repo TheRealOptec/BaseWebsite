@@ -5,6 +5,6 @@ import {} from '../simples/NodeInit.js'; // Initialise compiler nodes
 (function() {
     const editors = document.querySelectorAll(".simplesEditor");
     for(let editor of editors) {
-        SimplesIntegrator.classPiped(editor);
+        SimplesIntegrator.classPiped(<HTMLElement> editor, false);
     }
 })();

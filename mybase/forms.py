@@ -30,7 +30,7 @@ class PostForm(forms.Form):
         strip=False,
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
+                "class": "form-control simplesEditor simplesin-main",
                 "rows": 8,
                 "placeholder": "Write your post here...",
             }

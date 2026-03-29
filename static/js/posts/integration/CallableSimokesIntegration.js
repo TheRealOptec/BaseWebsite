@@ -1,10 +1,9 @@
 import { SimplesIntegrator } from "./SimplesIntegrator.js";
 import {} from '../simples/NodeInit.js'; // Initialise compiler nodes
-// JS Hack
-(function () {
+export function integrateSimples() {
     const editors = document.querySelectorAll(".simplesEditor");
     for (let editor of editors) {
-        SimplesIntegrator.classPiped(editor, false);
+        SimplesIntegrator.classPiped(editor);
     }
-})();
-//# sourceMappingURL=StdSimplesIntegration.js.map
+}
+//# sourceMappingURL=CallableSimokesIntegration.js.map

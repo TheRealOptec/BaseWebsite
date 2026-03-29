@@ -194,5 +194,9 @@
     </div>
 </div>
 
-<script type="module" src="/static/js/posts/integration/StdSimplesIntegration.js"></script>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="module" src="/static/js/posts/integration/StdSimplesIntegration.js"></script>
 {% endblock %}

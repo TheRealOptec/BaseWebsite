@@ -9,8 +9,9 @@ export class SimplesIntegrator {
         });
     }
     // Assumes editor is textarea or variation thereof which uses innerText as its content
-    static pipeSimplesEditor(editor, pipedTo) {
-        this.pipeSimplesCode(editor.textContent, pipedTo);
+    static pipeSimplesEditor(editor, pipedTo, useValue = false) {
+        const simplesCode = useValue ? editor.value : editor.textContent;
+        this.pipeSimplesCode(simplesCode, pipedTo);
     }
     static getClassParam(elem, prefix) {
         for (let cl of elem.className.split(" ")) {
@@ -23,10 +24,10 @@ export class SimplesIntegrator {
         }
         return undefined;
     }
-    static classPiped(editor) {
+    static classPiped(editor, useValue = false) {
         const streamName = this.getClassParam(editor, this.SIMPLES_INPUT_CLASS_PREFIX);
         document.querySelectorAll(`.${this.SIMPLES_OUTPUT_CLASS_PREFIX}-${streamName}`).forEach(outputElem => {
-            this.pipeSimplesEditor(editor, outputElem);
+            this.pipeSimplesEditor(editor, outputElem, useValue);
         });
     }
 }

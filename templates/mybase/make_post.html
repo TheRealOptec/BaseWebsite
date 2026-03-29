@@ -152,7 +152,7 @@
                                 </div>
 
                                 <div class="simples-preview-panel d-none mt-3" data-simples-preview-panel>
-                                    <div class="simples-preview-surface" data-simples-preview-output>
+                                    <div class="simples-preview-surface simplesout-main" data-simples-preview-output>
                                         <p class="text-muted mb-0">Preview your compiled post here.</p>
                                     </div>
                                 </div>
@@ -291,24 +291,6 @@
         import {} from "{% static 'js/posts/simples/NodeInit.js' %}";
         import { SimplesCompiler } from "{% static 'js/posts/simples/SimplesCompiler.js' %}";
 
-        const postForm = document.querySelector("[data-simples-form]");
-        const bodyInput = postForm?.querySelector("textarea[name='body']");
-        const editorPanel = postForm?.querySelector("[data-simples-editor-panel]");
-        const previewPanel = postForm?.querySelector("[data-simples-preview-panel]");
-        const previewOutput = postForm?.querySelector("[data-simples-preview-output]");
-        const errorPanel = postForm?.querySelector("[data-simples-error-panel]");
-        const errorList = postForm?.querySelector("[data-simples-error-list]");
-        const editButton = postForm?.querySelector("[data-simples-mode='edit']");
-        const previewButton = postForm?.querySelector("[data-simples-mode='preview']");
-
-        function renderPlainText(source, target) {
-            target.innerHTML = "";
-            const paragraph = document.createElement("p");
-            paragraph.className = "simples-plain-text mb-0";
-            paragraph.textContent = source;
-            target.appendChild(paragraph);
-        }
-
         function normaliseErrors(errors) {
             if (Array.isArray(errors)) {
                 return errors
@@ -360,6 +342,21 @@
 
             errorPanel.classList.remove("d-none");
         }
+    </script>
+
+    <!-- New Stuff -->
+    <script type="module">
+        import { integrateSimples } from "{% static 'js/posts/integration/CallableSimplesIntegration.js' %}";
+
+        const postForm = document.querySelector("[data-simples-form]");
+        const bodyInput = postForm?.querySelector("textarea[name='body']");
+        const editorPanel = postForm?.querySelector("[data-simples-editor-panel]");
+        const previewPanel = postForm?.querySelector("[data-simples-preview-panel]");
+        const previewOutput = postForm?.querySelector("[data-simples-preview-output]");
+        const errorPanel = postForm?.querySelector("[data-simples-error-panel]");
+        const errorList = postForm?.querySelector("[data-simples-error-list]");
+        const editButton = postForm?.querySelector("[data-simples-mode='edit']");
+        const previewButton = postForm?.querySelector("[data-simples-mode='preview']");
 
         function insertTabIndentation(event) {
             if (!bodyInput || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) {
@@ -377,31 +374,18 @@
             bodyInput.selectionStart = bodyInput.selectionEnd = start + indentation.length;
         }
 
-        async function renderPreview() {
-            if (!bodyInput || !previewOutput) {
-                return;
-            }
-
+        function renderPost() {
+            // Ensure bodyInput and previewOutput are defined
+            if (!bodyInput || !previewOutput) return;
+            // Get the source input
             const source = bodyInput.value.trim();
-            clearSimplesErrors();
-            previewOutput.innerHTML = "";
-
+            // Check the source input is defined
             if (!source) {
                 previewOutput.innerHTML = '<p class="text-muted mb-0">Nothing to preview yet.</p>';
                 return;
             }
-
-            try {
-                if (source.startsWith("<simples")) {
-                    const fragment = await SimplesCompiler.compile(source);
-                    previewOutput.appendChild(fragment);
-                } else {
-                    renderPlainText(source, previewOutput);
-                }
-            } catch (error) {
-                showSimplesErrors(error instanceof Error ? error.message : String(error));
-                renderPlainText(source, previewOutput);
-            }
+            // Compile and render the simples code
+            integrateSimples(true);
         }
 
         function setMode(mode) {
@@ -420,9 +404,12 @@
             previewButton.setAttribute("aria-pressed", String(isPreview));
 
             if (isPreview) {
-                renderPreview();
+                renderPost();
             }
         }
+
+        function clearSimplesErrors() {}
+        function showSimplesErrors() {}
 
         if (postForm && bodyInput) {
             bodyInput.addEventListener("keydown", insertTabIndentation);
