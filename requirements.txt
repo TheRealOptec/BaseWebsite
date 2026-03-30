@@ -1,15 +1,3 @@
-brotlicffi @ file:///C:/miniconda3/conda-bld/brotlicffi_1764961370587/work
-certifi @ file:///C:/Users/task_176765900829408/croot/certifi_1767659214946/work/certifi
-cffi @ file:///C:/miniconda3/conda-bld/cffi_1761832792265/work
-charset-normalizer @ file:///C:/miniconda3/conda-bld/charset-normalizer_1761745005832/work
-Django==2.2.28
-idna @ file:///C:/miniconda3/conda-bld/idna_1761912044050/work
-packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049096285/work
-pillow @ file:///C:/Users/task_177247533352805/croot/pillow_1772475427665/work
-pycparser @ file:///C:/miniconda3/conda-bld/pycparser_1757496060165/work
-PySocks @ file:///C:/miniconda3/conda-bld/pysocks_1761753028158/work
-pytz==2026.1.post1
-requests @ file:///C:/miniconda3/conda-bld/requests_1762359611410/work
-sqlparse==0.5.5
-urllib3 @ file:///C:/Users/task_176781036847582/croot/urllib3_1767810492638/work
-win_inet_pton @ file:///C:/miniconda3/conda-bld/win_inet_pton_1761746278197/work
+Django==6.0.3
+requests==2.32.3
+Pillow==10.4.0
