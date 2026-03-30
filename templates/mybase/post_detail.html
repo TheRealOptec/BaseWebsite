@@ -65,7 +65,7 @@
                 <h2 class="h6 mb-3">Navigation</h2>
 
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{% url 'mybase:home' %}" class="btn btn-outline-primary btn-sm">Home</a>
 
                     {% if post and post.topic %}
                         {% url 'mybase:view_topic' post.topic.slug as sidebar_topic_url %}

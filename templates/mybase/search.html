@@ -72,12 +72,12 @@
             <div class="card-body">
                 <h2 class="h6 mb-3">Quick Links</h2>
                 <div class="d-grid gap-2">
-                    <a href="{{ home_url }}" class="btn btn-outline-primary btn-sm">Home</a>
+                    <a href="{% url 'mybase:home' %}" class="btn btn-outline-primary btn-sm">Home</a>
                     {% if user.is_authenticated %}
-                        <a href="{{ edit_profile_url }}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                        <a href="{% url 'edit_user_profile' %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
                     {% else %}
-                        <a href="{{ login_url }}" class="btn btn-outline-primary btn-sm">Log In</a>
-                        <a href="{{ sign_up_url }}" class="btn btn-success btn-sm">Sign Up</a>
+                        <a href="{% url 'user_login' %}" class="btn btn-outline-primary btn-sm">Log In</a>
+                        <a href="{% url 'sign_up' %}" class="btn btn-success btn-sm">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
