@@ -99,6 +99,27 @@ class PostEditorTests(ForumTestCase):
         self.assertEqual(created_post.author, topic_reviewer)
         self.assertEqual(created_post.title, 'Duplicate Topic Post')
 
+    def test_make_post_with_duplicate_title_in_same_topic_gets_unique_slug(self):
+        topic_reviewer = self.create_user('duplicate-title-reviewer')
+        self.login(topic_reviewer)
+
+        response = self.client.post(
+            reverse('mybase:make_post', args=[self.topic.slug]),
+            {
+                'title': self.post.title,
+                'body': 'A second post with the same title',
+            },
+        )
+
+        duplicate_post = Page.objects.filter(topic=self.topic).order_by('-id').first()
+
+        self.assertNotEqual(duplicate_post.pk, self.post.pk)
+        self.assertEqual(duplicate_post.slug, 'original-title-2')
+        self.assertRedirects(
+            response,
+            reverse('mybase:view_post', args=[self.topic.slug, duplicate_post.slug]),
+        )
+
     def test_make_post_allows_second_post_for_same_author(self):
         second_topic = self.create_topic('Release Notes')
         self.login(self.author)
@@ -147,6 +168,31 @@ class PostEditorTests(ForumTestCase):
         self.assertEqual(self.post.title, 'Updated Title')
         self.assertEqual(self.post.body, 'Updated body content')
         self.assertEqual(self.post.slug, 'updated-title')
+        self.assertRedirects(
+            response,
+            reverse('mybase:view_post', args=[self.topic.slug, self.post.slug]),
+        )
+
+    def test_edit_post_to_existing_title_gets_unique_slug(self):
+        other_post = Page.objects.create(
+            author=self.other_user,
+            topic=self.topic,
+            title='Another Title',
+            body='Other body',
+        )
+        self.login(self.author)
+
+        response = self.client.post(
+            reverse('mybase:edit_post', args=[self.topic.slug, self.post.slug]),
+            {
+                'title': other_post.title,
+                'body': 'Updated body content',
+            },
+        )
+
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.title, 'Another Title')
+        self.assertEqual(self.post.slug, 'another-title-2')
         self.assertRedirects(
             response,
             reverse('mybase:view_post', args=[self.topic.slug, self.post.slug]),

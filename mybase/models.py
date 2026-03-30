@@ -33,8 +33,23 @@ class Page(models.Model):
 
     created_at = models.DateTimeField()
 
+    def _build_unique_slug(self):
+        base_slug = slugify(self.title) or "post"
+        slug = base_slug
+        suffix = 2
+
+        conflicting_posts = Page.objects.filter(topic=self.topic)
+        if self.pk is not None:
+            conflicting_posts = conflicting_posts.exclude(pk=self.pk)
+
+        while conflicting_posts.filter(slug=slug).exists():
+            slug = f"{base_slug}-{suffix}"
+            suffix += 1
+
+        return slug
+
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        self.slug = self._build_unique_slug()
         if self.created_at is None:
             self.created_at = timezone.now()
         super(Page, self).save(*args, **kwargs)
