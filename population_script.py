@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 
 # Sums up the values of a specific field given an array of a population data
 def sumPopulationData(popData, key):
-    sum = 0
+    total = 0
     for d in popData:
-        sum += d[key]
-    return sum
+        total += d[key]
+    return total
 
 
 def populate():
@@ -62,22 +62,33 @@ def populate():
         description = topdata['description']
         t = add_top(top, description, views, likes)
         for p in  topdata['page']:
+            print("USER", user)
             add_page(t, p['title'], p['body'], user, p['views'], p['likes'])
 
 
 def add_user(username, password, bio):
-    (user, valid) = User.objects.get_or_create(username=username)
-    if valid:
+    (user, created) = User.objects.get_or_create(username=username)
+    if created:
         print("Creating a new user!")
         user.password = password
         user.save()
-        profile = UserProfile(user=user, bio=bio)
-        profile.save()
-        return user
+        
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile.bio = bio
+    profile.save()
+    return user
 
 def add_page(topic, title, body, author, views=0, likes=0):
-    (p, valid) = Page.objects.get_or_create(topic=topic, title=title)
-    if valid:
+    (p, created) = Page.objects.get_or_create(
+        topic=topic, 
+        title=title,
+        defaults={
+            'body':body,
+            'author':author,
+            'views':views,
+            'likes':likes
+        })
+    if not created:
         p.views = views
         p.likes =  likes
         p.body = body
