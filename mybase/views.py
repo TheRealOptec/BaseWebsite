@@ -93,6 +93,7 @@ def home(request):
         "most_viewed_topic": most_viewed_topic,
         "most_liked_topic": most_liked_topic,
         "newest_topic": newest_topic,
+        "make_topic_url": ""
     }
     return render(request, 'mybase/home.html', context=context_dict)
 

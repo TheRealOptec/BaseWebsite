@@ -82,11 +82,11 @@
             <div class="col-lg-4 text-center text-lg-end">
                 <div class="site-auth-actions">
                 {% if user.is_authenticated %}
-                    <a href="{{ edit_profile_url }}" class="btn btn-outline-light btn-sm">Edit Profile</a>
-                    <a href="{{ logout_url }}" class="btn btn-light btn-sm">Log Out</a>
+                    <a href="{% url 'edit_user_profile' %}" class="btn btn-outline-light btn-sm">Edit Profile</a>
+                    <a href="{% url 'user_logout' %}" class="btn btn-light btn-sm">Log Out</a>
                 {% else %}
-                    <a href="{{ login_url }}" class="btn btn-outline-light btn-sm">Log In</a>
-                    <a href="{{ sign_up_url }}" class="btn btn-light btn-sm">Sign Up</a>
+                    <a href="{% url 'user_login' %}" class="btn btn-outline-light btn-sm">Log In</a>
+                    <a href="{% url 'sign_up' %}" class="btn btn-light btn-sm">Sign Up</a>
                 {% endif %}
                 </div>
             </div>
